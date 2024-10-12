@@ -337,4 +337,61 @@ class MainTest {
         assertTrue(p2.hasWon(), "Player 2 should be declared the winner.");
         assertFalse(p3.hasWon(), "Player 3 should not be declared the winner.");
     }
+
+    @Test
+    @DisplayName("RESP_08_test_01: Test game stops when there is a winner")
+    public void RESP_08_test_01() {
+        Player p1 = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        p1.addShields(7); // Give P1 7 shields (winning condition)
+
+        main.checkForWinners();
+
+        // Verify that the game has ended
+        assertFalse(main.isOngoing(), "Game should stop after a winner is declared.");
+    }
+
+    @Test
+    @DisplayName("RESP_08_test_02: Test game stops when there are multiple winners")
+    public void RESP_08_test_02() {
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        p1.addShields(7); // P1 wins
+        p2.addShields(7); // P2 also wins
+
+        main.checkForWinners();
+
+        // Verify that the game has ended
+        assertFalse(main.isOngoing(), "Game should stop after multiple winners are declared.");
+
+        // Check that P1 and P2 are in the winners list
+        assertTrue(p1.hasWon(), "Player 1 should be a winner.");
+        assertTrue(p2.hasWon(), "Player 2 should be a winner.");
+    }
+
+    @Test
+    @DisplayName("RESP_08_test_03: Test correct winner message display")
+    public void RESP_08_test_03() {
+        Player p1 = players.get(0);
+        p1.addShields(7);
+
+        // Capture output stream
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.checkForWinners();
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("[Game] P1 has won the game with 7 shields!!"),
+                "Correct winner message should be displayed.");
+    }
+
+    @Test
+    @DisplayName("RESP_08_test_04: Test game continues when there are no winners")
+    public void RESP_08_test_04() {
+        Player p1 = players.get(0);
+        p1.addShields(6); // P1 does not win
+        main.checkForWinners();
+        assertTrue(main.isOngoing(), "Game should continue if no player has won.");
+    }
 }

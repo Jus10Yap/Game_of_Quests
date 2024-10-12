@@ -10,6 +10,7 @@ public class Main {
     private List<Player> players;
     private final int NUM_PLAYERS = 4;
     private int currentPlayerIndex;
+    private boolean ongoing;
 
     public Main() {
         adventureDeck = new Deck(100);
@@ -17,6 +18,7 @@ public class Main {
         setupDecks();
         setupPlayers();
         currentPlayerIndex = -1;
+        ongoing = true;
     }
     // Functions
     public void setupDecks() {
@@ -85,6 +87,10 @@ public class Main {
         }
     }
 
+    public void checkForWinners() {
+
+    }
+
     // Getters
     public Deck getAdventureDeck() {
         return adventureDeck;
@@ -100,6 +106,10 @@ public class Main {
 
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
+    }
+
+    public boolean isOngoing() {
+        return ongoing;
     }
 
     // Setters
