@@ -88,7 +88,24 @@ public class Main {
     }
 
     public void checkForWinners() {
+        List<Player> winners = new ArrayList<>();
 
+        // Check if any player has won
+        for (Player player : players) {
+            if (player.hasWon()) {
+                winners.add(player); // Add all players with 7 or more shields to the winners list
+            }
+        }
+
+        if (!winners.isEmpty()) {
+            System.out.println("\n\n[Game] Congratulations! Here are our Winner(s): ");
+            for (Player winner : winners) {
+                System.out.println(
+                        "[Game] " + winner.getName() + " has won the game with " + winner.getShields() + " shields!!");
+            }
+            System.out.println("\n[Game] The game has ended! GG!");
+            ongoing = false; // Stop the game
+        }
     }
 
     // Getters
