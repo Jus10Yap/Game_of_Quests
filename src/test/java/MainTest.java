@@ -14,6 +14,7 @@ class MainTest {
     private Deck adventureDeck;
     private Deck eventDeck;
     private Main main;
+    private List<Player> players;
 
     @BeforeEach
     @DisplayName("Initialize Game and Deck")
@@ -22,6 +23,7 @@ class MainTest {
         main = new Main();
         adventureDeck = main.getAdventureDeck();
         eventDeck = main.getEventDeck();
+        players = main.getPlayers();
     }
 
     @AfterEach
@@ -31,7 +33,7 @@ class MainTest {
         main = new Main();
         adventureDeck = main.getAdventureDeck();
         eventDeck = main.getEventDeck();
-
+        players = main.getPlayers();
     }
 
     // R-Tests
@@ -197,6 +199,31 @@ class MainTest {
                 "The discard pile should be empty after reshuffling.");
         assertEquals(expectedMainDeckSize, main.getAdventureDeck().getSize(),
                 "Main deck size should reflect the cards drawn initially.");
+    }
+
+    @Test
+    @DisplayName("RESP_03_test_01: Test that 4 players are Initialized")
+    public void RESP_03_test_01() {
+        // Check if there are exactly 4 players
+        assertEquals(4, players.size(), "There should be exactly 4 players.");
+    }
+
+    @Test
+    @DisplayName("RESP_03_test_02: Test that the 4 players have the correct names")
+    public void RESP_03_test_02() {
+        // Check the names of the players
+        assertEquals("P1", players.get(0).getName(), "Player 1 should be named P1");
+        assertEquals("P2", players.get(1).getName(), "Player 2 should be named P2");
+        assertEquals("P3", players.get(2).getName(), "Player 3 should be named P3");
+        assertEquals("P4", players.get(3).getName(), "Player 4 should be named P4");
+    }
+
+    @Test
+    @DisplayName("RESP_03_test_03: Test that each player starts with 0 shields")
+    public void RESP_03_test_03() {
+        for (Player player : players) {
+            assertEquals(0, player.getShields(), player.getName() + " should start with 0 shields.");
+        }
     }
 
 }

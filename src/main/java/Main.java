@@ -1,9 +1,13 @@
 import cards.*;
 
+import java.util.List;
+
 public class Main {
     // Variables
     private Deck adventureDeck;
     private Deck eventDeck;
+    private List<Player> players;
+    private final int NUM_PLAYERS = 4;
 
     public Main() {
         adventureDeck = new Deck(100);
@@ -50,6 +54,12 @@ public class Main {
     public Deck getEventDeck() {
         return eventDeck;
     }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+
     public static void main(String[] args) {
         System.out.println("Hello world!");
     }
