@@ -3,33 +3,79 @@ import java.util.*;
 
 public class Deck {
     // Variables
-
+    private List<Card> cards; // Unused cards
+    private final int MAX_NUM_CARDS;
 
     public Deck(int maxCards) {
+        cards = new ArrayList<>();
+        MAX_NUM_CARDS = maxCards;
+    }
+    // Adds card to the deck
+    public void addCard(Card card) {
+        if (cards.size() >= MAX_NUM_CARDS) {
+            System.out.println("Cannot add card: deck is full.");
+            return;
+        }
+        cards.add(card);
+    }
 
+    // Adds multiple cards to the deck
+    public void addMultipleCards(Card card, int count) {
+        for (int i = 0; i < count; i++) {
+            addCard(card); // Use the existing addCard method
+        }
     }
 
     // Getters
     // Returns the size of the deck
     public int getSize() {
-        return 0;
-    }
-    // Return the size of specific card type in the deck
-    public int getSize(String name) {
-        return 0;
+        return cards.size();
     }
 
-    public int getQuestCardStage(String name) {
-        return 0;
+    // Return the size of specific card type in the deck
+    public int getSize(String name) {
+        int count = 0;
+        for (Card card : cards) {
+            if (card.getName().equals(name)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     // Returns the value of a Foe card by name
     public int getFoeCardValue(String name) {
-        return -1;
+        for (Card card : cards) {
+            if (card.getName().equals(name)) {
+                if (card instanceof FoeCard) {
+                    return ((FoeCard) card).getValue();
+                }
+            }
+        }
+        return -1; // Return -1 if the card is not found or if it's not a FoeCard
     }
 
     // Returns the value of a Weapon card by name
     public int getWeaponCardValue(String name) {
-        return -1;
+        for (Card card : cards) {
+            if (card.getName().equals(name)) {
+                if (card instanceof WeaponCard) {
+                    return ((WeaponCard) card).getValue();
+                }
+            }
+        }
+        return -1; // Return -1 if the card is not found or if it's not a WeaponCard
+    }
+
+    // Returns the number of stages of a Quest card by name
+    public int getQuestCardStage(String name) {
+        for (Card card : cards) {
+            if (card.getName().equals(name)) {
+                if (card instanceof QuestCard) {
+                    return ((QuestCard) card).getStages();
+                }
+            }
+        }
+        return -1; // Return -1 if the card is not found or if it's not a QuestCard
     }
 }
