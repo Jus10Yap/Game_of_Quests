@@ -394,4 +394,80 @@ class MainTest {
         main.checkForWinners();
         assertTrue(main.isOngoing(), "Game should continue if no player has won.");
     }
+
+    @Test
+    @DisplayName("RESP_09_test_01: Test that the player's hand is displayed in sorted order")
+    public void RESP_09_test_01() {
+        Player player = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        // Add Cards to hand
+        player.addCardToHand(new FoeCard("F10", 10)); // Foe with value 10
+        player.addCardToHand(new FoeCard("F5", 5)); // Foe with value 5
+        player.addCardToHand(new WeaponCard("S10", 10)); // Sword with value 10
+        player.addCardToHand(new WeaponCard("H10", 10)); // Horse with value 10
+        player.addCardToHand(new WeaponCard("D5", 5)); // Dagger with value 5
+
+        // Display the sorted hand
+        player.displayHand();
+
+        // Check if P1's hand is correctly sorted
+        List<Card> hand = player.getHand();
+        assertTrue(hand.get(0) instanceof FoeCard && ((FoeCard) hand.get(0)).getValue() == 5,
+                "First card should be Foe with value 5");
+        assertTrue(hand.get(1) instanceof FoeCard && ((FoeCard) hand.get(1)).getValue() == 10,
+                "Second card should be Foe with value 10");
+        assertTrue(hand.get(2) instanceof WeaponCard && hand.get(2).getName().equals("D5"),
+                "Third card should be Dagger (D5)");
+        assertTrue(hand.get(3) instanceof WeaponCard && hand.get(3).getName().equals("S10"),
+                "Fourth card should be Sword (S10)");
+        assertTrue(hand.get(4) instanceof WeaponCard && hand.get(4).getName().equals("H10"),
+                "Fifth card should be Horse (H10)");
+    }
+
+    @Test
+    @DisplayName("RESP_09_test_02: Test displaying an empty hand")
+    public void RESP_09_test_02() {
+        Player player = players.get(0);
+        player.setHand(new ArrayList<>()); // Set an empty hand
+        player.displayHand();
+    }
+
+    @Test
+    @DisplayName("RESP_09_test_03: Test displaying a single card hand")
+    public void RESP_09_test_03() {
+        Player player = players.get(0);
+        player.addCardToHand(new FoeCard("F20", 20)); // Only one card
+        player.displayHand();
+
+        List<Card> hand = player.getHand();
+        assertEquals(1, hand.size(), "Hand should contain one card.");
+        assertTrue(hand.get(0) instanceof FoeCard && ((FoeCard) hand.get(0)).getValue() == 20,
+                "The only card should be F20.");
+    }
+
+    @Test
+    @DisplayName("RESP_09_test_04: Test displaying a hand with duplicate cards")
+    public void RESP_09_test_04() {
+        Player player = players.get(0);
+        main.setCurrentPlayerIndex(0);
+
+        // Add duplicate cards to hand
+        player.addCardToHand(new FoeCard("F10", 10)); // Foe with value 10
+        player.addCardToHand(new FoeCard("F10", 10)); // Duplicate Foe with value 10
+        player.addCardToHand(new WeaponCard("D5", 5)); // Dagger with value 5
+        player.addCardToHand(new WeaponCard("D5", 5)); // Duplicate Dagger with value 5
+
+        // Display the sorted hand
+        player.displayHand();
+
+        List<Card> hand = player.getHand();
+        assertTrue(hand.get(0) instanceof FoeCard && ((FoeCard) hand.get(0)).getValue() == 10,
+                "First card should be Foe with value 10");
+        assertTrue(hand.get(1) instanceof FoeCard && ((FoeCard) hand.get(1)).getValue() == 10,
+                "Second card should be duplicate Foe with value 10");
+        assertTrue(hand.get(2) instanceof WeaponCard && hand.get(2).getName().equals("D5"),
+                "Third card should be Dagger (D5)");
+        assertTrue(hand.get(3) instanceof WeaponCard && hand.get(3).getName().equals("D5"),
+                "Fourth card should be duplicate Dagger (D5)");
+    }
 }

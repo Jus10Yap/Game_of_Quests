@@ -23,6 +23,21 @@ public class Player {
         return shields >= 7;
     }
 
+    // Sort the hand: Foes first, Weapons after in increasing value, Swords before
+    // Horses
+    public void sortHand() {
+
+    }
+
+    public void displayHand() {
+
+    }
+
+    // Add a card to the player's hand
+    public void addCardToHand(Card card) {
+
+    }
+
     // Getters
     public String getName() {
         return name;
