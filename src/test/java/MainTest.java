@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -226,4 +227,25 @@ class MainTest {
         }
     }
 
+    @Test
+    @DisplayName("RESP_04_test_01: Test that each player gets distributed 12 cards from the deck")
+    public void RESP_04_test_01() {
+        assertEquals(100, adventureDeck.getCards().size(), "Deck should start with 100 cards");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.distributeCardsToPlayers();
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        // Check if each player has received 12 cards
+        for (Player player : players) {
+            assertEquals(12, player.getHand().size(), "Each player should have received 12 cards");
+        }
+        // Check the number of remaining cards in the deck
+        assertEquals(52, adventureDeck.getCards().size(), "52 cards should remain in the deck after distribution");
+        assertTrue(output.contains("[Game] Each player has drawn 12 cards!"), "Game should output that all players has drawn 12 cards");
+    }
 }

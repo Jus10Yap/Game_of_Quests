@@ -5,6 +5,7 @@ public class Player {
     // Variables
     private final String name;
     private int shields;
+    private List<Card> hand;
 
     public Player(String name) {
         this.name = name;
@@ -18,6 +19,10 @@ public class Player {
 
     public int getShields() {
         return shields;
+    }
+
+    public List<Card> getHand() {
+        return hand;
     }
 
 

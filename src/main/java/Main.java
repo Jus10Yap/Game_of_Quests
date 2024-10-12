@@ -59,6 +59,10 @@ public class Main {
         System.out.println("[Game] Four players are ready to play!");
     }
 
+    public void distributeCardsToPlayers() {
+
+    }
+
     // Getters
     public Deck getAdventureDeck() {
         return adventureDeck;
