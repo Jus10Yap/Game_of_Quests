@@ -13,6 +13,15 @@ public class Player {
         hand = new ArrayList<>();
     }
 
+    // Add shields to the player
+    public void addShields(int num) {
+    }
+
+    // Check if the player has 7 or more shields
+    public boolean hasWon() {
+        return false;
+    }
+
     // Getters
     public String getName() {
         return name;

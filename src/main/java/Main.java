@@ -102,6 +102,10 @@ public class Main {
         return currentPlayerIndex;
     }
 
+    // Setters
+    public void setCurrentPlayerIndex(int index) {
+        currentPlayerIndex = index;
+    }
 
     public static void main(String[] args) {
         System.out.println("Hello world!");

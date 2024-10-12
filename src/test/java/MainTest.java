@@ -295,4 +295,46 @@ class MainTest {
         assertEquals("P1", players.get(main.getCurrentPlayerIndex()).getName(),
                 "Current player should be back to P1 after full cycle");
     }
+
+    @Test
+    @DisplayName("RESP_07_test_01: Test player wins when accumulating 7 shields")
+    public void RESP_07_test_01() {
+        Player p1 = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        p1.addShields(7); // Give P1 7 shields
+
+        // Check if the game correctly identifies the winner
+        assertEquals(7, p1.getShields(), "Player 1 should have 7 shields.");
+        assertTrue(p1.hasWon(), "Player 1 should be declared the winner.");
+    }
+
+    @Test
+    @DisplayName("RESP_07_test_02: Test no player wins with less than 7 shields")
+    public void RESP_07_test_02() {
+        Player p1 = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        p1.addShields(6);
+
+        // Check that player hasn't won
+        assertEquals(6, p1.getShields(), "Player 1 should have 6 shields.");
+        assertFalse(p1.hasWon(), "Player 1 should not be declared the winner.");
+    }
+
+    @Test
+    @DisplayName("RESP_07_test_03: Test multiple players win when they have 7 or more shields")
+    public void RESP_07_test_03() {
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+
+        main.setCurrentPlayerIndex(0);
+        p1.addShields(7); // P1 wins
+        p2.addShields(8); // P2 wins with more than 7 shields
+        p3.addShields(6); // P3 does not win
+
+        // P1 and P2 should be declared winners
+        assertTrue(p1.hasWon(), "Player 1 should be declared the winner.");
+        assertTrue(p2.hasWon(), "Player 2 should be declared the winner.");
+        assertFalse(p3.hasWon(), "Player 3 should not be declared the winner.");
+    }
 }
