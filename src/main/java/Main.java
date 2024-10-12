@@ -1,5 +1,6 @@
 import cards.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -13,6 +14,7 @@ public class Main {
         adventureDeck = new Deck(100);
         eventDeck = new Deck(17);
         setupDecks();
+        setupPlayers();
     }
     // Functions
     public void setupDecks() {
@@ -44,6 +46,17 @@ public class Main {
         // Shuffle the decks
 
         System.out.println("[Game] Adventure and Event Deck has been setup!");
+    }
+
+    public void setupPlayers() {
+        players = new ArrayList<>();
+
+        // Add 4 players
+        for (int i = 0; i < 4; i++) {
+            Player player = new Player("P" + (i + 1));
+            players.add(player);
+        }
+        System.out.println("[Game] Four players are ready to play!");
     }
 
     // Getters
