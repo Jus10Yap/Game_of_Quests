@@ -77,7 +77,12 @@ public class Main {
     }
 
     public void changeCurrentPlayer() {
-
+        if (currentPlayerIndex == -1) { // First round
+            distributeCardsToPlayers();
+            currentPlayerIndex = 0;
+        } else {
+            currentPlayerIndex = (currentPlayerIndex + 1) % NUM_PLAYERS;
+        }
     }
 
     // Getters
