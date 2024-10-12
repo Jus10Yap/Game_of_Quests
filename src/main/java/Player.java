@@ -15,11 +15,12 @@ public class Player {
 
     // Add shields to the player
     public void addShields(int num) {
+        shields += num;
     }
 
     // Check if the player has 7 or more shields
     public boolean hasWon() {
-        return false;
+        return shields >= 7;
     }
 
     // Getters
