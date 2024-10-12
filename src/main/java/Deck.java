@@ -9,8 +9,10 @@ public class Deck {
 
     public Deck(int maxCards) {
         cards = new ArrayList<>();
+        discardPile = new ArrayList<>();
         MAX_NUM_CARDS = maxCards;
     }
+
     // Adds card to the deck
     public void addCard(Card card) {
         if (cards.size() >= MAX_NUM_CARDS) {
@@ -29,16 +31,33 @@ public class Deck {
 
     // Discards a card to the discard pile
     public void discardCard(Card card) {
+        discardPile.add(card);
     }
 
     // Draws a card from the deck
     public Card drawCard() {
-       return null;
+        if (cards.isEmpty()) {
+            reshuffleDiscardPile(); // Shuffle discard pile back into deck if empty
+        }
+        if (!cards.isEmpty()) {
+            return cards.removeFirst(); // Draw the top card
+        }
+
+        return null; // No cards left to draw
+    }
+
+    // Reshuffles discard pile into the main deck
+    public void reshuffleDiscardPile() {
+        if (!discardPile.isEmpty()) {
+            cards.addAll(discardPile);
+            discardPile.removeAll(new ArrayList<>(discardPile));
+            shuffle();
+        }
     }
 
     // Shuffles deck
     public void shuffle() {
-
+        Collections.shuffle(cards);
     }
 
     // Getters
