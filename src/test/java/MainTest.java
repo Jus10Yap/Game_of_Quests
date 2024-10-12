@@ -1,7 +1,11 @@
+import cards.*;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -145,6 +149,54 @@ class MainTest {
         assertEquals(1, eventDeck.getSize("Plague"), "Should have 1 Plague card"); // 1 Plague
         assertEquals(2, eventDeck.getSize("Queen's Favor"), "Should have 2 Queen's Favor cards"); // 2 Queen's Favor
         assertEquals(2, eventDeck.getSize("Prosperity"), "Should have 2 Prosperity cards"); // 2 Prosperity
+    }
+
+    @Test
+    @DisplayName("RESP_02_test_01: Test adventure deck is shuffled")
+    public void RESP_02_test_01() {
+        List<Card> originalDeck = new ArrayList<>(adventureDeck.getCards());
+        adventureDeck.shuffle();
+        List<Card> shuffledDeck = adventureDeck.getCards();
+        // Check if all cards are present in the deck
+        assertEquals(originalDeck.size(), shuffledDeck.size());
+        // Check if the deck is shuffled (the order is different)
+        assertNotEquals(originalDeck, shuffledDeck);
+    }
+
+    @Test
+    @DisplayName("RESP_02_test_02: Test event deck is shuffled")
+    public void RESP_02_test_02() {
+        List<Card> originalDeck = new ArrayList<>(eventDeck.getCards());
+        eventDeck.shuffle();
+        List<Card> shuffledDeck = eventDeck.getCards();
+        // Check if all cards are present in the deck
+        assertEquals(originalDeck.size(), shuffledDeck.size());
+        // Check if the deck is shuffled (the order is different)
+        assertNotEquals(originalDeck, shuffledDeck);
+    }
+
+    @Test
+    @DisplayName("RESP_02_test_03: Test drawing from discard pile when deck is empty")
+    public void RESP_02_test_03() {
+        // Set up the main deck
+        main.getAdventureDeck().getCards().clear();
+        Card h10 = new WeaponCard("H10", 10);
+        Card s10 = new WeaponCard("S10", 10);
+
+        // Discard the cards
+        main.getAdventureDeck().discardCard(h10);
+        main.getAdventureDeck().discardCard(s10);
+
+        Card drawnCard = main.getAdventureDeck().drawCard();
+
+        int expectedMainDeckSize = 1;
+        int expectedDiscardPileSize = 0; // Discard pile should be empty after reshuffling
+
+        assertNotNull(drawnCard, "A card should have been drawn from the reshuffled discard pile.");
+        assertEquals(expectedDiscardPileSize, main.getAdventureDeck().getDiscardPile().size(),
+                "The discard pile should be empty after reshuffling.");
+        assertEquals(expectedMainDeckSize, main.getAdventureDeck().getSize(),
+                "Main deck size should reflect the cards drawn initially.");
     }
 
 }

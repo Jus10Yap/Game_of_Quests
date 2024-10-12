@@ -5,6 +5,7 @@ public class Deck {
     // Variables
     private List<Card> cards; // Unused cards
     private final int MAX_NUM_CARDS;
+    private List<Card> discardPile; // Discarded cards
 
     public Deck(int maxCards) {
         cards = new ArrayList<>();
@@ -24,6 +25,20 @@ public class Deck {
         for (int i = 0; i < count; i++) {
             addCard(card); // Use the existing addCard method
         }
+    }
+
+    // Discards a card to the discard pile
+    public void discardCard(Card card) {
+    }
+
+    // Draws a card from the deck
+    public Card drawCard() {
+       return null;
+    }
+
+    // Shuffles deck
+    public void shuffle() {
+
     }
 
     // Getters
@@ -77,5 +92,13 @@ public class Deck {
             }
         }
         return -1; // Return -1 if the card is not found or if it's not a QuestCard
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public List<Card> getDiscardPile() {
+        return discardPile;
     }
 }
