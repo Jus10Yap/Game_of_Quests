@@ -256,4 +256,43 @@ class MainTest {
         assertEquals("P1", players.get(main.getCurrentPlayerIndex()).getName(),
                 "The current player should be P1 at the start.");
     }
+
+    @Test
+    @DisplayName("RESP_06_test_01: Test that the next current player of the first round is P2")
+    public void RESP_06_test_01() {
+        main.changeCurrentPlayer(); // P1
+        main.changeCurrentPlayer(); // P2
+        assertEquals("P2", players.get(main.getCurrentPlayerIndex()).getName(), "Next player should be P2");
+    }
+
+    @Test
+    @DisplayName("RESP_06_test_02: Test that the next current player of the first round is P3")
+    public void RESP_06_test_02() {
+        main.changeCurrentPlayer(); // P1
+        main.changeCurrentPlayer(); // P2
+        main.changeCurrentPlayer(); // P3
+        assertEquals("P3", players.get(main.getCurrentPlayerIndex()).getName(), "Next player should be P3");
+    }
+
+    @Test
+    @DisplayName("RESP_06_test_03: Test that the next current player of the first round is P4")
+    public void RESP_06_test_03() {
+        main.changeCurrentPlayer(); // P1
+        main.changeCurrentPlayer(); // P2
+        main.changeCurrentPlayer(); // P3
+        main.changeCurrentPlayer(); // P4
+        assertEquals("P4", players.get(main.getCurrentPlayerIndex()).getName(), "Next player should be P4");
+    }
+
+    @Test
+    @DisplayName("RESP_06_test_04: Test that the current player goes back to P1")
+    public void RESP_06_test_04() {
+        main.changeCurrentPlayer(); // P1
+        main.changeCurrentPlayer(); // P2
+        main.changeCurrentPlayer(); // P3
+        main.changeCurrentPlayer(); // P4
+        main.changeCurrentPlayer(); // Back to P1
+        assertEquals("P1", players.get(main.getCurrentPlayerIndex()).getName(),
+                "Current player should be back to P1 after full cycle");
+    }
 }
