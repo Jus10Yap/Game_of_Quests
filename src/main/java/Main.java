@@ -60,7 +60,18 @@ public class Main {
     }
 
     public void distributeCardsToPlayers() {
+        int cardsPerPlayer = 12;
 
+        // Draw 12 cards for each player
+        for (Player player : players) {
+            List<Card> playerHand = new ArrayList<>();
+            for (int i = 0; i < cardsPerPlayer; i++) {
+                Card drawnCard = adventureDeck.drawCard();
+                playerHand.add(drawnCard);
+            }
+            player.setHand(playerHand);
+        }
+        System.out.println("[Game] Each player has drawn 12 cards!");
     }
 
     // Getters

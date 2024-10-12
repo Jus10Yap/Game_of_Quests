@@ -10,6 +10,7 @@ public class Player {
     public Player(String name) {
         this.name = name;
         shields = 0;
+        hand = new ArrayList<>();
     }
 
     // Getters
@@ -25,5 +26,8 @@ public class Player {
         return hand;
     }
 
-
+    // Setters
+    public void setHand(List<Card> hand) {
+        this.hand = hand;
+    }
 }
