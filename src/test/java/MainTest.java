@@ -248,4 +248,12 @@ class MainTest {
         assertEquals(52, adventureDeck.getCards().size(), "52 cards should remain in the deck after distribution");
         assertTrue(output.contains("[Game] Each player has drawn 12 cards!"), "Game should output that all players has drawn 12 cards");
     }
+
+    @Test
+    @DisplayName("RESP_05_test_01: Test that the current player of the first round is P1")
+    public void RESP_05_test_01() {
+        main.changeCurrentPlayer(); // P1
+        assertEquals("P1", players.get(main.getCurrentPlayerIndex()).getName(),
+                "The current player should be P1 at the start.");
+    }
 }

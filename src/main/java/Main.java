@@ -9,12 +9,14 @@ public class Main {
     private Deck eventDeck;
     private List<Player> players;
     private final int NUM_PLAYERS = 4;
+    private int currentPlayerIndex;
 
     public Main() {
         adventureDeck = new Deck(100);
         eventDeck = new Deck(17);
         setupDecks();
         setupPlayers();
+        currentPlayerIndex = -1;
     }
     // Functions
     public void setupDecks() {
@@ -74,6 +76,10 @@ public class Main {
         System.out.println("[Game] Each player has drawn 12 cards!");
     }
 
+    public void changeCurrentPlayer() {
+
+    }
+
     // Getters
     public Deck getAdventureDeck() {
         return adventureDeck;
@@ -85,6 +91,10 @@ public class Main {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
     }
 
 
