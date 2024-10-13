@@ -624,6 +624,39 @@ class MainTest {
         assertEquals(10, currentPlayer.getHand().size(), "Player's hand should remain at 10 cards.");
     }
 
+    @Test
+    @DisplayName("RESP_13_test_01: Test Queen's Favor event adds 2 cards to the player's hand")
+    public void RESP_13_test_01() {
+        Player currentPlayer = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        int initialHandSize = currentPlayer.getHand().size();
 
+        // No input
+        String input = "";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
+        EventCard queensFavorCard = new EventCard("Queen's Favor");
+        main.handleEventCard(queensFavorCard, scanner);
+        assertEquals(initialHandSize + 2, currentPlayer.getHand().size(),
+                "Player should have 2 more cards in their hand after drawing Queen's Favor.");
+    }
+
+    @Test
+    @DisplayName("RESP_13_test_02: Test Queen's Favor does not exceed maximum hand size")
+    public void RESP_13_test_02() {
+        Player currentPlayer = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        currentPlayer.setHand(main.getAdventureDeck().drawMultipleCards(12));
+
+        assertEquals(12, currentPlayer.getHand().size(), "Player should have 12 cards initially.");
+
+        // Input positions 2, 4
+        String input = "2\n4\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        EventCard queensFavorCard = new EventCard("Queen's Favor");
+        main.handleEventCard(queensFavorCard, scanner);
+        assertEquals(12, currentPlayer.getHand().size(),
+                "Player's hand should not exceed the maximum size of 12 cards.");
+    }
 }
