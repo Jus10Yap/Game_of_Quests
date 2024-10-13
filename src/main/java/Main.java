@@ -1,8 +1,6 @@
 import cards.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     // Variables
@@ -373,6 +371,10 @@ public class Main {
         }
 
         return stageCards;
+    }
+
+    public boolean handleQuit(List<Card> stageCards, int currentStageValue, int prevStageValue, int stageNumber) {
+        return false;
     }
 
     public void playRound() {

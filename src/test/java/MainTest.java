@@ -1262,4 +1262,137 @@ class MainTest {
         assertTrue(stageCards.contains(f10), "Stage should contain the FoeCard.");
         assertTrue(stageCards.contains(s10), "Stage should contain the WeaponCard.");
     }
+
+    @Test
+    @DisplayName("RESP_21_test_01: Test handling quit with an empty stage")
+    void RESP_21_test_01() {
+        List<Card> stageCards = new ArrayList<>();
+        int currentStageValue = 0;
+        int prevStageValue = 10;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 1);
+
+        assertFalse(result, "The result should be false for an empty stage.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] A stage cannot be empty."), "A stage should not be empty");
+    }
+
+    @Test
+    @DisplayName("RESP_21_test_02: Test handling quit with insufficient stage value")
+    void RESP_21_test_02() {
+        List<Card> stageCards = new ArrayList<>();
+        stageCards.add(new WeaponCard("S10", 10));
+        int currentStageValue = 5; // Less than the previous stage value
+        int prevStageValue = 10;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 2);
+
+        assertFalse(result, "The result should be false for insufficient stage value.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains(
+                        "[Game] Insufficient value for this stage. You must create a stage with greater value than the previous one."),
+                "Stage value has to be greater than previous one");
+    }
+
+    @Test
+    @DisplayName("RESP_21_test_03: Test handling quit with a valid stage")
+    void RESP_21_test_03() {
+        List<Card> stageCards = new ArrayList<>();
+        stageCards.add(new FoeCard("F10", 10));
+        stageCards.add(new WeaponCard("S10", 10));
+        int currentStageValue = 20; // Greater than previous stage value
+        int prevStageValue = 15;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 2);
+
+        assertTrue(result, "The result should be true for a valid stage.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(output.contains("[Game] Stage 2 complete."), "Stage should be valid");
+    }
+
+    @Test
+    @DisplayName("RESP_21_test_04: Test handling quit with a stage containing only a foe card and no weapon cards.")
+    void RESP_21_test_04() {
+        List<Card> stageCards = new ArrayList<>();
+        stageCards.add(new FoeCard("F10", 10));
+        int currentStageValue = 10;
+        int prevStageValue = 0;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 1);
+
+        assertFalse(result, "The result should be false.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] You must include at least one unique weapon card in the stage."),
+                "Stage should be invalid");
+    }
+
+    @Test
+    @DisplayName("RESP_21_test_05: Test handling quit with a stage containing only a weapon cards and no foe card.")
+    void RESP_21_test_05() {
+        List<Card> stageCards = new ArrayList<>();
+        stageCards.add(new WeaponCard("S10", 10));
+        stageCards.add(new WeaponCard("H10", 10));
+        int currentStageValue = 20; // Greater than previous stage value
+        int prevStageValue = 15;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 2);
+
+        assertFalse(result, "The result should be false.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] You must include one foe card in the stage."), "Stage should be invalid");
+    }
+
+    @Test
+    @DisplayName("RESP_21_test_06: Test handling quit with multiple unique weapons and one foe card")
+    void RESP_21_test_06() {
+        List<Card> stageCards = new ArrayList<>();
+        stageCards.add(new FoeCard("F10", 10));
+        stageCards.add(new WeaponCard("S10", 10));
+        stageCards.add(new WeaponCard("H10", 10));
+        int currentStageValue = 30;
+        int prevStageValue = 20;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 2);
+
+        assertTrue(result, "The result should be true for a valid stage with unique weapons and a foe.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Stage 2 complete."),
+                "Stage should be valid with unique weapons and a foe card.");
+    }
 }
