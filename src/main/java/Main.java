@@ -2,6 +2,7 @@ import cards.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     // Variables
@@ -106,6 +107,11 @@ public class Main {
             System.out.println("\n[Game] The game has ended! GG!");
             ongoing = false; // Stop the game
         }
+    }
+
+    // Handle the event card and pass the Scanner object
+    public void handleEventCard(EventCard card, Scanner scanner) {
+
     }
 
     public void playRound() {

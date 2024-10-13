@@ -500,4 +500,64 @@ class MainTest {
         assertNotNull(drawnCard, "The last card should be drawn successfully");
     }
 
+    @Test
+    @DisplayName("RESP_11_test_01: Test Plague event causes the player to lose 2 shields")
+    public void RESP_11_test_01() {
+        Player currentPlayer = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        currentPlayer.addShields(5); // Give P1 5 shields
+
+        // No input
+        String input = "";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        EventCard plagueCard = new EventCard("Plague");
+        main.handleEventCard(plagueCard, scanner);
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(output.contains("[Game] P1 loses 2 shields!"));
+        assertEquals(3, currentPlayer.getShields(),
+                "Player should have 3 shields after losing 2 due to the Plague event.");
+    }
+
+    @Test
+    @DisplayName("RESP_11_test_02: Test Plague card does not reduce shields below 0")
+    public void RESP_11_test_02() {
+        Player currentPlayer = players.get(0);
+        main.setCurrentPlayerIndex(0);
+
+        // No input
+        String input = "";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        currentPlayer.addShields(1); // Give P1 shields (less than 2)
+        EventCard plagueCard = new EventCard("Plague");
+        main.handleEventCard(plagueCard, scanner);
+        assertEquals(0, currentPlayer.getShields(), "Player should not have negative shields.");
+    }
+
+    @Test
+    @DisplayName("RESP_11_test_03: Test Plague event with 0 shields")
+    public void RESP_11_test_03() {
+        Player currentPlayer = players.get(0);
+        main.setCurrentPlayerIndex(0);
+
+        // No input
+        String input = "";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        // Player starts with 0 shields
+        EventCard plagueCard = new EventCard("Plague");
+        main.handleEventCard(plagueCard, scanner);
+        assertEquals(0, currentPlayer.getShields(), "Player should still have 0 shields after Plague event.");
+    }
+
+
+
+
 }
