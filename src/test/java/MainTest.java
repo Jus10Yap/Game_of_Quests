@@ -1395,4 +1395,47 @@ class MainTest {
         assertTrue(output.contains("[Game] Stage 2 complete."),
                 "Stage should be valid with unique weapons and a foe card.");
     }
+
+    @Test
+    @DisplayName("RESP_22_test_01: Test building a valid stage")
+    void RESP_22_test_01() {
+        Player sponsor = players.get(0); // P1
+        sponsor.addCardToHand(new FoeCard("F5", 5));
+        sponsor.addCardToHand(new WeaponCard("S10", 10));
+
+        String input = "0\n0\nquit\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Card> stageCards;
+        int prevStageValue = 0;
+        int stageNumber = 1;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        stageCards = main.buildStage(0, prevStageValue, stageNumber, scanner);
+        assertNotNull(stageCards, "Stage setup should be successful and not return null.");
+        assertEquals(2, stageCards.size(), "Stage should contain 2 cards.");
+
+        boolean result = stageCards.isEmpty();
+        assertFalse(result, "Stage should have cards");
+        assertTrue(stageCards.get(0) instanceof FoeCard && stageCards.get(0).getName().equals("F5"),
+                "First stage should contain F5.");
+        assertTrue(stageCards.get(1) instanceof WeaponCard && stageCards.get(1).getName().equals("S10"),
+                "First stage should contain S10.");
+
+        int stageValue = main.calculateStageValue(stageCards);
+
+        assertEquals(15, stageValue, "Stage value should be 15");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(output.contains("[Game] Building stage number 1"), "Should be building 1st stage");
+        assertTrue(output.contains("[Game] P1's hand:"), "The game should display the hand of the sponsor");
+        assertTrue(
+                output.contains(
+                        "[Game] Enter the position of the card you want to add to the stage or 'Quit' to finish:"),
+                "The game should prompt the sponsor for the position of the next card to include in that stage or 'Quit'");
+    }
 }

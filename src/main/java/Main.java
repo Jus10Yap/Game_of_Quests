@@ -410,6 +410,16 @@ public class Main {
         }
     }
 
+    public int calculateStageValue(List<Card> stageCards) {
+        int value = 0;
+        return value;
+    }
+
+    public List<Card> buildStage(int sponsorIndex, int prevStageValue, int stageNumber, Scanner scanner) {
+        List<Card> stageCards = new ArrayList<>();
+        return stageCards;
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();
