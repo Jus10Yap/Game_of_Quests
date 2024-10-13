@@ -460,7 +460,41 @@ public class Main {
 
     public List<List<Card>> buildQuest(int sponsorIndex, QuestCard questCard, Scanner scanner) {
         List<List<Card>> questStages = new ArrayList<>(); // List of stages, each containing a list of cards
+        int numStages = questCard.getStages(); // Number of stages in the quest
+        int prevStageValue = 0;
+
+        for (int i = 1; i <= numStages; i++) {
+            System.out.println("[Game] Setting up stage " + i + " of " + numStages + ".");
+
+            List<Card> stage = buildStage(sponsorIndex, prevStageValue, i, scanner);
+
+            if (stage.isEmpty()) {
+                System.out.println("[Game] Stage setup was incomplete or failed.");
+                return null; // Quest setup failed
+            }
+
+            questStages.add(stage);
+            prevStageValue = calculateStageValue(stage); // Update the value of the previous stage
+        }
+
+        System.out.println("[Game] Quest setup is complete! All stages have been successfully configured.");
         return questStages;
+    }
+
+    public void handleQuestCard(QuestCard questCard, Scanner scanner) {
+        Player currentPlayer = players.get(currentPlayerIndex);
+        System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");
+
+        int sponsorIndex = promptForSponsorship(questCard, scanner);
+        if (sponsorIndex != -1) {
+            System.out.println("[Game] Sponsor is: " + players.get(sponsorIndex).getName());
+            List<List<Card>> questCards = buildQuest(sponsorIndex, questCard, scanner);
+
+            // play the quest
+
+        } else {
+            System.out.println("[Game] All players have declined to sponsor the quest. The quest card is discarded.");
+        }
     }
 
     public void playRound() {
@@ -481,7 +515,8 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             handleEventCard((EventCard) drawnCard, scanner);
         } else if (drawnCard instanceof QuestCard) {
-
+            Scanner scanner = new Scanner(System.in);
+            handleQuestCard((QuestCard) drawnCard, scanner);
         } else {
             System.out.println("\n[WARNING] Incorrect card found in event deck!!!\n");
         }
