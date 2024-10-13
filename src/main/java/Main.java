@@ -126,6 +126,25 @@ public class Main {
                 System.out.println(
                         "[Game] " + currentPlayer.getName() + " now has " + currentPlayer.getShields() + " shields.");
             }
+            case "Queen's Favor" -> {
+                System.out.println("\n[Game] " + currentPlayer.getName() + " draws 2 adventure cards!");
+
+                // Draw 2 adventure cards
+                for (int i = 0; i < 2; i++) {
+                    Card drawnCard = adventureDeck.drawCard();
+                    currentPlayer.addCardToHand(drawnCard);
+                }
+
+                // Display player's hand after drawing
+                currentPlayer.displayHand();
+
+                // Check if the player needs to trim their hand
+                if (currentPlayer.getHand().size() > 12) {
+                    System.out.println("[Game] " + currentPlayer.getName()
+                            + " has more than 12 cards, starting hand trimming process!");
+                    trimHand(currentPlayer, scanner);
+                }
+            }
         }
     }
 
