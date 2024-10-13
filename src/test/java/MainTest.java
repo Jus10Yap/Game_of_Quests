@@ -2320,4 +2320,81 @@ class MainTest {
         assertEquals(0, p3.getShields(), "P3 should still have no shields.");
         assertEquals(0, p4.getShields(), "P4 should still have no shields.");
     }
+
+    @Test
+    @DisplayName("RESP_33_test_01: Test Sponsor draws same number of cards + the number of stages")
+    void RESP_33_test_01() {
+        int sponsorIndex = 0;
+        Player sponsor = players.get(sponsorIndex);
+
+        List<List<Card>> questCards = new ArrayList<>(); // [ F5, S10 ] , [ F5, S10, H10 ]
+        FoeCard f5 = new FoeCard("F5", 5);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        questCards.add(Arrays.asList(f5, s10)); // Stage 1 cards
+        questCards.add(Arrays.asList(f5, s10, h10)); // Stage 2 cards
+
+        int stages = 2;
+        String input = "";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.endQuest(sponsorIndex, questCards, stages, scanner);
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Discarding card:"), "Game should output what is being discarded");
+        assertEquals(5, adventureDeck.getDiscardPile().size(), "There should be 5 discarded cards.");
+        assertTrue(adventureDeck.getDiscardPile().contains(f5), "Foe card F5 should be discarded.");
+        assertTrue(adventureDeck.getDiscardPile().contains(s10), "Weapon card S10 should be discarded.");
+        assertTrue(adventureDeck.getDiscardPile().contains(h10), "Weapon card H10 should be discarded.");
+        // 5 discarded + 2 stages = 7 cards
+        assertEquals(7, sponsor.getHand().size(), "Sponsor should have drawn 7 new cards.");
+        assertTrue(output.contains("[Game] P1 draws a card:"), "P1 should be drawing a card");
+    }
+
+    @Test
+    @DisplayName("RESP_33_test_02: Test Sponsor draws same number of cards + the number of stages and trims their hand")
+    void RESP_33_test_02() {
+        int sponsorIndex = 0;
+        Player sponsor = players.get(sponsorIndex);
+        sponsor.setHand(adventureDeck.drawMultipleCards(6));
+        List<List<Card>> questCards = new ArrayList<>(); // [ F5, S10 ] , [ F5, S10, H10 ]
+        FoeCard f5 = new FoeCard("F5", 5);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        questCards.add(Arrays.asList(f5, s10)); // Stage 1 cards
+        questCards.add(Arrays.asList(f5, s10, h10)); // Stage 2 cards
+
+        int stages = 2;
+        String input = "0\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.endQuest(sponsorIndex, questCards, stages, scanner);
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        // Test card discards
+        assertTrue(output.contains("[Game] Discarding card:"), "Game should output what is being discarded");
+        assertTrue(output.contains("[Game] P1 has more than 12 cards and needs to trim their hand."),
+                "Game should detect and output that P1 has more than 12 cards.");
+        assertEquals(6, adventureDeck.getDiscardPile().size(),
+                "There should be 6 discarded cards. (including the one trimmed)");
+        assertTrue(adventureDeck.getDiscardPile().contains(f5), "Foe card F5 should be discarded.");
+        assertTrue(adventureDeck.getDiscardPile().contains(s10), "Weapon card S10 should be discarded.");
+        assertTrue(adventureDeck.getDiscardPile().contains(h10), "Weapon card H10 should be discarded.");
+        // 5 discarded + 2 stages = 7 cards
+        assertEquals(12, sponsor.getHand().size(), "Sponsor should have 12 cards in hand.");
+        assertTrue(output.contains("[Game] P1 draws a card:"), "P1 should be drawing a card");
+    }
+
 }
