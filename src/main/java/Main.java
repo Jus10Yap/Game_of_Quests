@@ -458,6 +458,11 @@ public class Main {
         return stageCards;
     }
 
+    public List<List<Card>> buildQuest(int sponsorIndex, QuestCard questCard, Scanner scanner) {
+        List<List<Card>> questStages = new ArrayList<>(); // List of stages, each containing a list of cards
+        return questStages;
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();

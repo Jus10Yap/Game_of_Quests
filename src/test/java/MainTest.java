@@ -1438,4 +1438,51 @@ class MainTest {
                         "[Game] Enter the position of the card you want to add to the stage or 'Quit' to finish:"),
                 "The game should prompt the sponsor for the position of the next card to include in that stage or 'Quit'");
     }
+
+    @Test
+    @DisplayName("RESP_23_test_01: Test successful quest setup with multiple stages")
+    void RESP_23_test_01() {
+        QuestCard questCard = new QuestCard("Q2", 2); // Quest with 2 stages
+        Player sponsor = players.get(0); // P1
+        sponsor.addCardToHand(new FoeCard("F5", 5));
+        sponsor.addCardToHand(new WeaponCard("S10", 10));
+        sponsor.addCardToHand(new FoeCard("F10", 10));
+        sponsor.addCardToHand(new WeaponCard("B15", 15));
+
+        String input = "0\n1\nquit\n0\n0\nquit\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        List<List<Card>> questStages = main.buildQuest(0, questCard, scanner);
+
+        assertNotNull(questStages, "Quest setup should be successful and not return null.");
+        assertEquals(2, questStages.size(), "Quest should contain 2 stages.");
+
+        List<Card> firstStage = questStages.get(0);
+        assertEquals(2, firstStage.size(), "First stage should contain 2 cards.");
+        assertTrue(firstStage.get(0) instanceof FoeCard && firstStage.get(0).getName().equals("F5"),
+                "First stage should contain F5.");
+        assertTrue(firstStage.get(1) instanceof WeaponCard && firstStage.get(1).getName().equals("S10"),
+                "First stage should contain S10.");
+
+        List<Card> secondStage = questStages.get(1);
+        assertEquals(2, secondStage.size(), "Second stage should contain 2 cards.");
+        assertTrue(secondStage.get(0) instanceof FoeCard && secondStage.get(0).getName().equals("F10"),
+                "Second stage should contain F10.");
+        assertTrue(secondStage.get(1) instanceof WeaponCard && secondStage.get(1).getName().equals("B15"),
+                "Second stage should contain B15.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Setting up stage 1 of 2."),
+                "Output should indicate the first stage is being set up.");
+        assertTrue(output.contains("[Game] Setting up stage 2 of 2."),
+                "Output should indicate the second stage is being set up.");
+        assertTrue(output.contains("[Game] Quest setup is complete!"),
+                "Output should indicate the quest setup is complete.");
+    }
 }
