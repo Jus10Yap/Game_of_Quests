@@ -63,7 +63,12 @@ public class Deck {
     // Draws multiple cards from the deck
     public List<Card> drawMultipleCards(int numCards) {
         List<Card> drawnCards = new ArrayList<>();
-
+        for (int i = 0; i < numCards; i++) {
+            Card drawnCard = drawCard();
+            if (drawnCard != null) {
+                drawnCards.add(drawnCard);
+            }
+        }
         return drawnCards;
     }
 

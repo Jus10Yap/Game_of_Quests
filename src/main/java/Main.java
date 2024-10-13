@@ -131,7 +131,51 @@ public class Main {
 
     // Trim player's hand to 12 cards
     public void trimHand(Player player, Scanner scanner) {
-        
+        int handSize = player.getHand().size();
+
+        if (handSize <= 12) {
+            System.out.println("[Game] " + player.getName() + "'s hand is already at or below the limit.");
+            return;
+        }
+
+        int cardsToDiscard = handSize - 12; // Number of cards to discard
+        System.out.println("\n[Game] " + player.getName() + ", you need to discard " + cardsToDiscard
+                + " cards to trim your hand to 12.");
+
+        // Loop to prompt the player to discard cards
+        for (int i = 0; i < cardsToDiscard; i++) {
+            // Display player's hand each time before asking for a discard
+            player.displayHand();
+            System.out.println("\n[Game] Select the position (0-" + (player.getHand().size() - 1)
+                    + ") of the card you want to discard:");
+
+            int position = -1;
+            while (position < 0 || position >= player.getHand().size()) {
+                try {
+                    position = Integer.parseInt(scanner.nextLine()); // Use nextLine to avoid input issues
+
+                    if (position < 0 || position >= player.getHand().size()) {
+                        System.out.println("[WARNING] Invalid position, please try again.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("[WARNING] Please enter a valid number.");
+                }
+            }
+            System.out.println("[" + player.getName() + "] " + position);
+
+            // Remove the card at the selected position and add it to the discard pile
+            Card removedCard = player.getHand().remove(position);
+            adventureDeck.discardCard(removedCard); // Add the card to the discard pile
+            System.out.println("[Game] Removed and discarded: " + removedCard.getName());
+
+            // Provide a message if more cards need to be discarded
+            if (i < cardsToDiscard - 1) {
+                System.out.println("[Game] You need to discard " + (cardsToDiscard - i - 1) + " more cards.");
+            }
+        }
+
+        System.out.println("[Game] " + player.getName() + "'s hand has been trimmed to 12 cards!");
+        player.displayHand(); // Display the trimmed hand
     }
 
     public void playRound() {
