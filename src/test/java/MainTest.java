@@ -2453,5 +2453,351 @@ class MainTest {
         assertTrue(output.contains("[Game] No participants won stage 1."),
                 "Game should output no participants won the stage");
     }
+    @Test
+    @DisplayName("A-TEST JP-Scenario: Test Compulsory scenario")
+    void A_TEST_JP_SCENARIO() {
+        // Start game, decks are created, hands of the 4 players are set up with random
+        // cards (done by setUp())
+        main.setCurrentPlayerIndex(0);
 
+        // Rig the 4 hands to the hold the cards of the 4 posted initial hands
+        // P1's Hand: F5, F5, F15, F15, D5, S10, S10, H10, H10, B15, B15, L20
+        Player p1 = players.get(0);
+        p1.addCardToHand(new FoeCard("F5", 5));
+        p1.addCardToHand(new FoeCard("F5", 5));
+        p1.addCardToHand(new FoeCard("F15", 15));
+        p1.addCardToHand(new FoeCard("F15", 15));
+        p1.addCardToHand(new WeaponCard("D5", 5));
+        p1.addCardToHand(new WeaponCard("S10", 10));
+        p1.addCardToHand(new WeaponCard("S10", 10));
+        p1.addCardToHand(new WeaponCard("H10", 10));
+        p1.addCardToHand(new WeaponCard("H10", 10));
+        p1.addCardToHand(new WeaponCard("B15", 15));
+        p1.addCardToHand(new WeaponCard("B15", 15));
+        p1.addCardToHand(new WeaponCard("L20", 20));
+
+        // Remove the cards from the adventure deck
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("D5");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("B15");
+        adventureDeck.removeCard("B15");
+        adventureDeck.removeCard("L20");
+
+        // P2's Hand: F5, F5, F15, F15, F40, D5, S10, H10, H10, B15, B15, E30
+        Player p2 = players.get(1);
+        p2.addCardToHand(new FoeCard("F5", 5));
+        p2.addCardToHand(new FoeCard("F5", 5));
+        p2.addCardToHand(new FoeCard("F15", 15));
+        p2.addCardToHand(new FoeCard("F15", 15));
+        p2.addCardToHand(new FoeCard("F40", 40));
+        p2.addCardToHand(new WeaponCard("D5", 5));
+        p2.addCardToHand(new WeaponCard("S10", 10));
+        p2.addCardToHand(new WeaponCard("H10", 10));
+        p2.addCardToHand(new WeaponCard("H10", 10));
+        p2.addCardToHand(new WeaponCard("B15", 15));
+        p2.addCardToHand(new WeaponCard("B15", 15));
+        p2.addCardToHand(new WeaponCard("E30", 30));
+
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("F40");
+        adventureDeck.removeCard("D5");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("B15");
+        adventureDeck.removeCard("B15");
+        adventureDeck.removeCard("E30");
+
+        // P3's Hand: F5, F5, F5, F15, D5, S10, S10, S10, H10, H10, B15, B15
+        Player p3 = players.get(2);
+        p3.addCardToHand(new FoeCard("F5", 5));
+        p3.addCardToHand(new FoeCard("F5", 5));
+        p3.addCardToHand(new FoeCard("F5", 5));
+        p3.addCardToHand(new FoeCard("F15", 15));
+        p3.addCardToHand(new WeaponCard("D5", 5));
+        p3.addCardToHand(new WeaponCard("S10", 10));
+        p3.addCardToHand(new WeaponCard("S10", 10));
+        p3.addCardToHand(new WeaponCard("S10", 10));
+        p3.addCardToHand(new WeaponCard("H10", 10));
+        p3.addCardToHand(new WeaponCard("H10", 10));
+        p3.addCardToHand(new WeaponCard("B15", 15));
+        p3.addCardToHand(new WeaponCard("L20", 20));
+
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("D5");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("B15");
+        adventureDeck.removeCard("L20");
+
+        // P4's Hand: F5, F15, F15, F40, D5, D5, S10, H10, H10, B15, L20, E30
+        Player p4 = players.get(3);
+        p4.addCardToHand(new FoeCard("F5", 5));
+        p4.addCardToHand(new FoeCard("F15", 15));
+        p4.addCardToHand(new FoeCard("F15", 15));
+        p4.addCardToHand(new FoeCard("F40", 40));
+        p4.addCardToHand(new WeaponCard("D5", 5));
+        p4.addCardToHand(new WeaponCard("D5", 5));
+        p4.addCardToHand(new WeaponCard("S10", 10));
+        p4.addCardToHand(new WeaponCard("H10", 10));
+        p4.addCardToHand(new WeaponCard("H10", 10));
+        p4.addCardToHand(new WeaponCard("B15", 15));
+        p4.addCardToHand(new WeaponCard("L20", 20));
+        p4.addCardToHand(new WeaponCard("E30", 30));
+
+        adventureDeck.removeCard("F5");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("F15");
+        adventureDeck.removeCard("F40");
+        adventureDeck.removeCard("D5");
+        adventureDeck.removeCard("D5");
+        adventureDeck.removeCard("S10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("H10");
+        adventureDeck.removeCard("B15");
+        adventureDeck.removeCard("L20");
+        adventureDeck.removeCard("E30");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "n\ny\n0\n6\nquit\n1\n4\nquit\n1\n2\n3\nquit\n1\n2\nquit\nplay\nplay\nplay\n0\n0\n0\n4\n4\nquit\n4\n3\nquit\n3\n5\nquit\nplay\nplay\nplay\n6\n5\nquit\n8\n3\nquit\n5\n5\nquit\nplay\nplay\n9\n5\n3\nquit\n6\n4\n6\nquit\nplay\nplay\n6\n5\n5\nquit\n3\n3\n3\n4\nquit\n0\n0\n0\n0";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        // P1 draws a quest of 4 stages
+        QuestCard questCard = new QuestCard("Q4", 4);
+
+        // P1 is asked but declines to sponsor
+        int sponsorIndex = main.promptForSponsorship(questCard, scanner);
+
+        // P2 is asked and sponsors and then builds the 4 stages of the quest as posted
+        List<List<Card>> questCards = main.buildQuest(sponsorIndex, questCard, scanner);
+        // Other players do NOT see these stages
+        // questCards = [F5,H10], [F15,S10], [F15,D5, B15], [F40,B15]
+        // P2's Hand: F5, H10, E30
+
+        List<Player> previousWinners = new ArrayList<>();
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants;
+        int stageNumber = 1;
+        int index = main.getCurrentPlayerIndex();
+        // Stage 1:
+        eligibleParticipants = main.getEligibleParticipants(sponsorIndex, players, previousWinners, withdrawnPlayers,
+                stageNumber);
+        main.displayEligibleParticipants(eligibleParticipants, stageNumber);
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+
+        // P1 is asked and decides to participate – draws an F30 – discards an F5 (to
+        // trim down to 12 cards)
+        p1.addCardToHand(new FoeCard("F30", 30));
+        adventureDeck.removeCard("F30");
+        main.trimHand(p1, scanner);
+
+        // P3 is asked and decides to participate – draws a Sword - discards an F5 (to
+        // trim down to 12 cards)
+        p3.addCardToHand(new WeaponCard("S10", 10));
+        adventureDeck.removeCard("S10");
+        main.trimHand(p3, scanner);
+
+        // P4 is asked and decides to participate – draws an Axe - discards an F5 (to
+        // trim down to 12 cards)
+        p4.addCardToHand(new WeaponCard("B15", 15));
+        adventureDeck.removeCard("B15");
+        main.trimHand(p4, scanner);
+
+        // Please be sure to build all attacks with the weapons selected in the order
+        // presented below
+        List<List<Card>> attackingCards = new ArrayList<>();
+        List<Integer> attackIndices = new ArrayList<>();
+
+        // P1 sees their hand and builds an attack: Dagger + Sword => value of 15
+        // P3 sees their hand and builds an attack: Sword + Dagger => value of 15
+        // P4 sees their hand and builds an attack: Dagger + Horse => value of 15
+        for (int i = 0; i <= 4; i++) {
+            Player participant = players.get((index + i) % 4);
+            if (participants.contains(participant) && !attackIndices.contains((index + i) % 4)) {
+                List<Card> attackCards = main.setupAttack((index + i) % 4, scanner); // Player sets up attack
+                attackingCards.add(attackCards);
+                attackIndices.add((index + i) % 4);
+            }
+        }
+
+        // Resolution: all 3 attacks are sufficient thus all participants can go onto
+        // the next stage
+        main.resolveAttacks(questCards, 0, attackingCards, attackIndices, previousWinners, withdrawnPlayers);
+
+        // All 3 participants discard the cards used for their attacks
+        main.discardAttackCards(attackingCards);
+
+        // Stage 2:
+        stageNumber = 2;
+
+        eligibleParticipants = main.getEligibleParticipants(sponsorIndex, players, previousWinners, withdrawnPlayers,
+                stageNumber);
+        main.displayEligibleParticipants(eligibleParticipants, stageNumber);
+        // P1 is asked and decides to participate. P1 draws a F10
+        // P3 is asked and decides to participate. P3 draws a Lance
+        // P4 is asked and decides to participate. P4 draws a Lance
+        participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+
+        p1.addCardToHand(new FoeCard("F10", 10));
+        adventureDeck.removeCard("F10");
+
+        p3.addCardToHand(new WeaponCard("L20", 20));
+        adventureDeck.removeCard("L20");
+
+        p4.addCardToHand(new WeaponCard("L20", 20));
+        adventureDeck.removeCard("L20");
+
+        // P1 sees their hand and builds an attack: Horse + Sword => value of 20
+        // P3 sees their hand and builds an attack: Axe + Sword => value of 25
+        // P4 sees their hand and builds an attack: Horse + Axe=> value of 25
+        attackingCards.clear();
+        attackIndices.clear();
+        for (int i = 0; i <= 4; i++) {
+            Player participant = players.get((index + i) % 4);
+            if (participants.contains(participant) && !attackIndices.contains((index + i) % 4)) {
+                List<Card> attackCards = main.setupAttack((index + i) % 4, scanner); // Player sets up attack
+                attackingCards.add(attackCards);
+                attackIndices.add((index + i) % 4);
+            }
+        }
+
+        // Resolution:
+        main.resolveAttacks(questCards, stageNumber - 1, attackingCards, attackIndices, previousWinners,
+                withdrawnPlayers);
+        // P1’s attack is insufficient – P1 loses and cannot go to the next stage
+        // P3’s and P4’s attack are sufficient go onto the next stage
+        // Assert P1 has no shields and their hand is F5 F10 F15 F15 F30 Horse Axe Axe
+        // Lance (displayed in this order)
+        assertEquals(0, p1.getShields(), "P1 should have no shields");
+        List<String> hand = new ArrayList<>();
+        for (Card card : p1.getHand()) {
+            hand.add(card.getName());
+        }
+        List<String> expectedHand = Arrays.asList("F5", "F10", "F15", "F15", "F30", "H10", "B15", "B15", "L20");
+        assertEquals(expectedHand, hand, "P1 does not have the correct cards");
+
+        // All 3 participants discard the cards used for their attacks
+        main.discardAttackCards(attackingCards);
+        // Stage 3:
+        stageNumber = 3;
+        // P3 is asked and decides to participate. P3 draws an Axe
+        // P4 is asked and decides to participate. P4 draws a Sword
+        eligibleParticipants = main.getEligibleParticipants(sponsorIndex, players, previousWinners, withdrawnPlayers,
+                stageNumber);
+        main.displayEligibleParticipants(eligibleParticipants, stageNumber);
+
+        participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+
+        p3.addCardToHand(new WeaponCard("B15", 15));
+        adventureDeck.removeCard("B15");
+
+        p4.addCardToHand(new WeaponCard("S10", 10));
+        adventureDeck.removeCard("S10");
+
+        // P3 sees their hand and builds an attack: Lance + Horse + Sword => value of 40
+        // P4 sees their hand and builds an attack: Axe + Sword + Lance => value of 45
+        attackingCards.clear();
+        attackIndices.clear();
+        for (int i = 0; i <= 4; i++) {
+            Player participant = players.get((index + i) % 4);
+            if (participants.contains(participant) && !attackIndices.contains((index + i) % 4)) {
+                List<Card> attackCards = main.setupAttack((index + i) % 4, scanner); // Player sets up attack
+                attackingCards.add(attackCards);
+                attackIndices.add((index + i) % 4);
+            }
+        }
+
+        // Resolution: P3’s and P4’s attack are sufficient go onto the next stage
+        main.resolveAttacks(questCards, stageNumber - 1, attackingCards, attackIndices, previousWinners,
+                withdrawnPlayers);
+        // All 2 participants discard the cards used for their attacks
+        main.discardAttackCards(attackingCards);
+
+        // Stage 4:
+        stageNumber = 4;
+        eligibleParticipants = main.getEligibleParticipants(sponsorIndex, players, previousWinners, withdrawnPlayers,
+                stageNumber);
+        main.displayEligibleParticipants(eligibleParticipants, stageNumber);
+        // P3 is asked and decides to participate. P3 draws a F30
+        // P4 is asked and decides to participate. P4 draws a Lance
+        participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(2, participants.size(), "Should be 2 participants for Stage 4");
+
+        p3.addCardToHand(new FoeCard("F30", 30));
+        adventureDeck.removeCard("F30");
+
+        p4.addCardToHand(new WeaponCard("L20", 20));
+        adventureDeck.removeCard("L20");
+
+        // P3 sees their hand and builds an attack: Axe + Horse + Lance=> value of 45
+        // P4 sees their hand and builds an attack: Dagger + Sword + Lance + Excalibur
+        // => value of 65
+        attackingCards.clear();
+        attackIndices.clear();
+        for (int i = 0; i <= 4; i++) {
+            Player participant = players.get((index + i) % 4);
+            if (participants.contains(participant) && !attackIndices.contains((index + i) % 4)) {
+                List<Card> attackCards = main.setupAttack((index + i) % 4, scanner); // Player sets up attack
+                attackingCards.add(attackCards);
+                attackIndices.add((index + i) % 4);
+            }
+        }
+
+        // Resolution:
+        main.resolveAttacks(questCards, stageNumber - 1, attackingCards, attackIndices, previousWinners,
+                withdrawnPlayers);
+
+        // P3’s attack is insufficient – P3 loses and receives no shields
+        // P4’s attack is sufficient – P4 receives 4 shields
+        main.resolveQuest(previousWinners, stageNumber);
+        // All 2 participants discard the cards used for their attacks
+        main.discardAttackCards(attackingCards);
+        // assert P3 has no shields and has the 5 cards: F5 F5 F15 F30 Sword
+        assertEquals(0, p3.getShields(), "P3 should have no shields");
+        hand = new ArrayList<>();
+        for (Card card : p3.getHand()) {
+            hand.add(card.getName());
+        }
+        expectedHand = Arrays.asList("F5", "F5", "F15", "F30", "S10");
+        assertEquals(expectedHand, hand, "P3 does not have the correct cards");
+        // assert P4 has 4 shields and has the cards: F15 F15 F40 Lance
+        assertEquals(4, p4.getShields(), "P4 should have four shields");
+        hand = new ArrayList<>();
+        for (Card card : p4.getHand()) {
+            hand.add(card.getName());
+        }
+        expectedHand = Arrays.asList("F15", "F15", "F40", "L20");
+        assertEquals(expectedHand, hand, "P4 does not have the correct cards");
+
+        // P2 discards all 9 cards used in the quest and draws 9+4 = 13 random cards and
+        // then
+        // trims down to 12 cards. It does not matter which cards are selected to
+        // discard.
+        main.endQuest(sponsorIndex, questCards, questCard.getStages(), scanner);
+
+        // assert P2 has 12 cards in hand
+        assertEquals(12, p2.getHand().size(), "P2 should have 12 cards");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+    }
 }
