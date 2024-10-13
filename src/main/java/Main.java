@@ -374,7 +374,40 @@ public class Main {
     }
 
     public boolean handleQuit(List<Card> stageCards, int currentStageValue, int prevStageValue, int stageNumber) {
-        return false;
+        if (stageNumber == 1 && stageCards.isEmpty()) {
+            System.out.println("[Game] A stage cannot be empty.");
+            return false;
+        } else if (stageNumber > 1 && currentStageValue <= prevStageValue) {
+            System.out.println(
+                    "[Game] Insufficient value for this stage. You must create a stage with greater value than the previous one.");
+            return false;
+        } else {
+            boolean hasFoeCard = false;
+            Set<String> weaponNames = new HashSet<>();
+
+            for (Card card : stageCards) {
+                if (card instanceof FoeCard) {
+                    hasFoeCard = true;
+                } else if (card instanceof WeaponCard) {
+                    weaponNames.add(card.getName());
+                }
+            }
+
+            if (!hasFoeCard) {
+                System.out.println("[Game] You must include one foe card in the stage.");
+                return false;
+            } else if (weaponNames.isEmpty()) {
+                System.out.println("[Game] You must include at least one unique weapon card in the stage.");
+                return false;
+            }
+            // Stage is valid
+            System.out.println("[Game] Stage " + stageNumber + " complete. Cards used in this stage:");
+            for (Card card : stageCards) {
+                System.out.println(card.getName());
+            }
+            System.out.println("[Game] Stage " + stageNumber + " total value: " + currentStageValue);
+            return true;
+        }
     }
 
     public void playRound() {
