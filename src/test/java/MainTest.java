@@ -802,4 +802,29 @@ class MainTest {
         assertTrue(output.contains("[Game] P1 draws 2 adventure cards!"),
                 "P1 draws 2 adventure cards should be displayed last");
     }
+
+    @Test
+    @DisplayName("RESP_15_test_01: Test that the current player's turn ends and the hot seat is cleared after pressing <return>")
+    public void RESP_15_test_01() {
+        main.setCurrentPlayerIndex(0);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        main.moveToNextPlayer(scanner);
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Your turn is complete, please pass the device to the next player."),
+                "The turn completion message should be displayed.");
+        assertTrue(output.contains("[Game] Press 'Enter' to continue to the next player's turn."),
+                "The prompt to press 'Enter' should be displayed.");
+        assertTrue(output.contains("[P1] <Enter>"));
+        assertTrue(output.contains("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"),
+                "The hotseat display should be cleared after pressing <return>.");
+    }
 }

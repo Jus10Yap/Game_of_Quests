@@ -218,6 +218,10 @@ public class Main {
         player.displayHand(); // Display the trimmed hand
     }
 
+    public void moveToNextPlayer(Scanner scanner) {
+       
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();
@@ -273,6 +277,11 @@ public class Main {
 
     public int getNumPlayers() {
         return NUM_PLAYERS;
+    }
+
+    public int getNextPlayerIndex() {
+
+        return 0;
     }
 
     // Setters
