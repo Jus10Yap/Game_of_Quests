@@ -557,6 +557,72 @@ class MainTest {
         assertEquals(0, currentPlayer.getShields(), "Player should still have 0 shields after Plague event.");
     }
 
+    @Test
+    @DisplayName("RESP_12_test_01: Test player trims their hand to 12 cards")
+    public void RESP_12_test_01() {
+        Player currentPlayer = players.get(0);
+        List<Card> fullHand = main.getAdventureDeck().drawMultipleCards(15); // Give P1 15 cards
+        currentPlayer.setHand(fullHand);
+        assertEquals(15, currentPlayer.getHand().size(), "Player should have 15 cards initially.");
+
+        // Input positions 0, 1, 2
+        String input = "0\n1\n2\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        main.trimHand(currentPlayer, scanner);
+        assertEquals(12, currentPlayer.getHand().size(), "Player's hand should be trimmed to 12 cards.");
+    }
+
+    @Test
+    @DisplayName("RESP_12_test_02: Test cards are discarded and moved to discard pile during hand trimming")
+    public void RESP_12_test_02() {
+        Player currentPlayer = players.get(0);
+        List<Card> fullHand = main.getAdventureDeck().drawMultipleCards(15); // Give P1 15 cards
+        currentPlayer.setHand(fullHand);
+        assertEquals(15, currentPlayer.getHand().size(), "Player should have 15 cards initially.");
+
+        // Input positions 2, 4, 6
+        String input = "2\n4\n6\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        int initialMainDeckSize = main.getAdventureDeck().getSize();
+        int initialDiscardPileSize = main.getAdventureDeck().getDiscardPile().size();
+        main.trimHand(currentPlayer, scanner);
+        assertEquals(12, currentPlayer.getHand().size(), "Player should have exactly 12 cards after trimming.");
+        int expectedDiscardPileSize = initialDiscardPileSize + 3;
+        assertEquals(expectedDiscardPileSize, main.getAdventureDeck().getDiscardPile().size(),
+                "3 cards should be in the discard pile.");
+        int expectedMainDeckSize = initialMainDeckSize; // This will depend on your game logic if cards are removed from
+        // the main deck
+        assertEquals(expectedMainDeckSize, main.getAdventureDeck().getSize(),
+                "Main deck size should reflect the cards drawn initially.");
+    }
+
+    @Test
+    @DisplayName("RESP_12_test_03: Test no trimming is needed if player already has 12 cards")
+    public void RESP_12_test_03() {
+        Player currentPlayer = players.get(0);
+        List<Card> hand = main.getAdventureDeck().drawMultipleCards(12);
+        currentPlayer.setHand(hand);
+        assertEquals(12, currentPlayer.getHand().size(), "Player should have 12 cards initially.");
+
+        Scanner scanner = new Scanner(new ByteArrayInputStream("".getBytes()));
+
+        assertEquals(12, currentPlayer.getHand().size(), "Player's hand should remain at 12 cards.");
+    }
+
+    @Test
+    @DisplayName("RESP_12_test_04: Test no trimming is needed if player has less than 12 cards")
+    public void RESP_12_test_04() {
+        Player currentPlayer = players.get(0);
+        List<Card> hand = main.getAdventureDeck().drawMultipleCards(10);
+        currentPlayer.setHand(hand);
+        assertEquals(10, currentPlayer.getHand().size(), "Player should have 10 cards initially.");
+
+        Scanner scanner = new Scanner(new ByteArrayInputStream("".getBytes()));
+        main.trimHand(currentPlayer, scanner);
+
+        assertEquals(10, currentPlayer.getHand().size(), "Player's hand should remain at 10 cards.");
+    }
 
 
 

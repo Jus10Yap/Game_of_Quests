@@ -60,6 +60,13 @@ public class Deck {
         Collections.shuffle(cards);
     }
 
+    // Draws multiple cards from the deck
+    public List<Card> drawMultipleCards(int numCards) {
+        List<Card> drawnCards = new ArrayList<>();
+
+        return drawnCards;
+    }
+
     // Getters
     // Returns the size of the deck
     public int getSize() {

@@ -129,6 +129,11 @@ public class Main {
         }
     }
 
+    // Trim player's hand to 12 cards
+    public void trimHand(Player player, Scanner scanner) {
+        
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();
