@@ -628,8 +628,47 @@ public class Main {
         return attackCards;
     }
 
+    public int calculateAttackStrength(List<Card> attackCards) {
+        int strength = 0;
+        for (Card card : attackCards) {
+            if (card instanceof WeaponCard) {
+                strength += ((WeaponCard) card).getValue();
+            }
+        }
+        return strength;
+    }
+
     public List<Card> setupAttack(int participantIndex, Scanner scanner) {
+        Player participant = players.get(participantIndex);
+        System.out.println("[Game] " + participant.getName() + " is setting up an attack for the stage.");
         List<Card> attackCards = new ArrayList<>();
+        boolean attackComplete = false;
+
+        while (!attackComplete) {
+            // Display the hand of the player
+            participant.displayHand();
+            // Prompt the participant for the position of the next card to include in the
+            // attack or ‘quit’ (to end building this attack)
+            String input = promptForInput(scanner, participant,
+                    "[Game] Enter the position of the card you want to add to your attack or 'Quit' to finish: ")
+                    .toLowerCase();
+
+            if (input.equals("quit")) {
+                System.out.println("[Game] Attack complete.");
+                System.out.println("[Game] Total attack value: " + calculateAttackStrength(attackCards));
+                System.out.println("[Game] Cards used for this attack: ");
+                for (Card card : attackCards) {
+                    System.out.println(card.getName());
+                }
+                attackComplete = true;
+            } else if (isInteger(input)) {
+                attackCards = addCardToAttack(input, participantIndex, attackCards, scanner);
+                System.out.println("[Game] Total attack value: " + calculateAttackStrength(attackCards));
+            } else {
+                System.out.println("[Game] Invalid input.");
+            }
+        }
+
         return attackCards;
     }
 
