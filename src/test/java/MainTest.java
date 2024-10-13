@@ -659,4 +659,147 @@ class MainTest {
         assertEquals(12, currentPlayer.getHand().size(),
                 "Player's hand should not exceed the maximum size of 12 cards.");
     }
+
+    @Test
+    @DisplayName("RESP_14_test_01: Test Prosperity event makes all players draw 2 cards")
+    public void RESP_14_test_01() {
+        main.setCurrentPlayerIndex(0);
+        // Store the initial hand sizes of all players
+        List<Integer> initialHandSizes = new ArrayList<>();
+        for (int i = 0; i < main.getNumPlayers(); i++) {
+            initialHandSizes.add(players.get(i).getHand().size());
+        }
+
+        // No input
+        String input = "";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        main.handleEventCard(prosperityCard, scanner);
+
+        // Check that each player has drawn 2 cards
+        for (int i = 0; i < main.getNumPlayers(); i++) {
+            Player player = players.get(i);
+            assertEquals(initialHandSizes.get(i) + 2, player.getHand().size(),
+                    player.getName() + " should have 2 more cards.");
+        }
+    }
+
+    @Test
+    @DisplayName("RESP_14_test_02: Test Prosperity event when P1 has more than 12 cards")
+    public void RESP_14_test_02() {
+        Player player = players.get(0);
+        main.setCurrentPlayerIndex(0);
+        player.setHand(main.getAdventureDeck().drawMultipleCards(12));
+        assertEquals(12, player.getHand().size(), player.getName() + " should have exactly 12 cards initially.");
+
+        String input = "1\n2\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        main.handleEventCard(prosperityCard, scanner);
+
+        // Check that P1 has more than 12 cards after the event
+        assertEquals(12, player.getHand().size(), player.getName() + "'s hand should not exceed 12 cards.");
+
+    }
+
+    @Test
+    @DisplayName("RESP_14_test_03: Test Prosperity event when P2 has more than 12 cards")
+    public void RESP_14_test_03() {
+        Player player = players.get(1);
+        main.setCurrentPlayerIndex(0);
+        player.setHand(main.getAdventureDeck().drawMultipleCards(12));
+        assertEquals(12, player.getHand().size(), player.getName() + " should have exactly 12 cards initially.");
+
+        String input = "1\n2\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        main.handleEventCard(prosperityCard, scanner);
+
+        // Check that P2 has more than 12 cards after the event
+        assertEquals(12, player.getHand().size(), player.getName() + "'s hand should not exceed 12 cards.");
+
+    }
+
+    @Test
+    @DisplayName("RESP_14_test_04: Test Prosperity event when P3 and P4 has more than 12 cards")
+    public void RESP_14_test_04() {
+        Player p3 = players.get(2);
+        Player p4 = players.get(3);
+        main.setCurrentPlayerIndex(0);
+
+        p3.setHand(main.getAdventureDeck().drawMultipleCards(12));
+        p4.setHand(main.getAdventureDeck().drawMultipleCards(12));
+
+        assertEquals(12, p3.getHand().size(), p3.getName() + " should have exactly 12 cards initially.");
+        assertEquals(12, p4.getHand().size(), p4.getName() + " should have exactly 12 cards initially.");
+
+        // All inputs
+        String input = "\n2\n4\n1\n3\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        main.handleEventCard(prosperityCard, scanner);
+
+        // Check that both P3 and P4 now have exactly 12 cards
+        assertEquals(12, p3.getHand().size(), p3.getName() + "'s hand should not exceed 12 cards.");
+        assertEquals(12, p4.getHand().size(), p4.getName() + "'s hand should not exceed 12 cards.");
+    }
+
+    @Test
+    @DisplayName("RESP_14_test_05: Test Prosperity event when all players have more than 12 cards")
+    public void RESP_14_test_05() {
+        main.setCurrentPlayerIndex(0);
+        // Draw cards for all players and set their hands to 12 cards
+        for (Player player : players) {
+            player.setHand(main.getAdventureDeck().drawMultipleCards(12));
+            assertEquals(12, player.getHand().size(), player.getName() + " should have exactly 12 cards initially.");
+        }
+
+        String input = "2\n4\n0\n1\n8\n3\n6\n7\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        main.handleEventCard(prosperityCard, scanner);
+
+        // Check that all players now have exactly 12 cards
+        for (Player player : players) {
+            assertEquals(12, player.getHand().size(), player.getName() + "'s hand should not exceed 12 cards.");
+        }
+    }
+
+    @Test
+    @DisplayName("RESP_14_test_06: Test Prosperity event that P2 draws card first then P3, then P4, then P1")
+    public void RESP_14_test_06() {
+        PrintStream originalOut = System.out;
+        main.setCurrentPlayerIndex(1); // P2
+        for (Player player : players) {
+            player.setHand(main.getAdventureDeck().drawMultipleCards(10));
+            assertEquals(10, player.getHand().size(), player.getName() + " should have exactly 10 cards initially.");
+        }
+
+        // Redirect System.out to capture output
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        main.handleEventCard(prosperityCard, new Scanner(System.in)); // Scanner for handling input
+
+        // Get captured output
+        String output = outputStream.toString();
+
+        System.setOut(originalOut);
+        System.out.println("Captured Output: " + output);
+
+        assertTrue(output.contains("[Game] P2 draws 2 adventure cards!"),
+                "P2 draws 2 adventure cards should be displayed first");
+        assertTrue(output.contains("[Game] P3 draws 2 adventure cards!"),
+                "P3 draws 2 adventure cards should be displayed second");
+        assertTrue(output.contains("[Game] P4 draws 2 adventure cards!"),
+                "P4 draws 2 adventure cards should be displayed third");
+        assertTrue(output.contains("[Game] P1 draws 2 adventure cards!"),
+                "P1 draws 2 adventure cards should be displayed last");
+    }
 }

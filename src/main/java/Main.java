@@ -250,6 +250,10 @@ public class Main {
         return ongoing;
     }
 
+    public int getNumPlayers() {
+        return NUM_PLAYERS;
+    }
+
     // Setters
     public void setCurrentPlayerIndex(int index) {
         currentPlayerIndex = index;
