@@ -1112,4 +1112,52 @@ class MainTest {
                 "P2 should choose not to sponsor the quest");
         assertTrue(output.contains("[Game] P3 is sponsoring the quest!"), "P3 should be confirmed as the sponsor");
     }
+
+    @Test
+    @DisplayName("RESP_18_test_01: Test valid card position input")
+    public void RESP_18_test_01() {
+        main.setCurrentPlayerIndex(0); // P1
+        Player p1 = players.get(0);
+
+        p1.addCardToHand(new FoeCard("F10", 10));
+        p1.addCardToHand(new WeaponCard("D5", 5));
+
+        String validInput = "1";
+        assertTrue(main.isValidCardPosition(validInput, 0), "Position 1 should be valid.");
+    }
+
+    @Test
+    @DisplayName("RESP_18_test_02: Test invalid card position with non-integer input")
+    public void RESP_18_test_02() {
+        main.setCurrentPlayerIndex(0); // P1
+        Player p1 = players.get(0);
+
+        p1.addCardToHand(new FoeCard("F10", 10));
+
+        String invalidInput = "a";
+        assertFalse(main.isValidCardPosition(invalidInput, 0), "Non-integer input should be invalid.");
+    }
+
+    @Test
+    @DisplayName("RESP_18_test_03: Test invalid card position with out-of-range input")
+    public void RESP_18_test_03() {
+        main.setCurrentPlayerIndex(0); // P1
+        Player p1 = players.get(0);
+        p1.addCardToHand(new FoeCard("F10", 10));
+        p1.addCardToHand(new WeaponCard("D5", 5));
+
+        String outOfRangeInput = "5";
+        assertFalse(main.isValidCardPosition(outOfRangeInput, 0), "Out-of-range position should be invalid.");
+    }
+
+    @Test
+    @DisplayName("RESP_18_test_04: Test invalid card position with negative input")
+    public void RESP_18_test_04() {
+        main.setCurrentPlayerIndex(0); // P1
+        Player p1 = players.get(0);
+        p1.addCardToHand(new FoeCard("F10", 10));
+
+        String negativeInput = "-1";
+        assertFalse(main.isValidCardPosition(negativeInput, 0), "Negative position should be invalid.");
+    }
 }

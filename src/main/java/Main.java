@@ -286,6 +286,10 @@ public class Main {
         return -1;
     }
 
+    public boolean isValidCardPosition(String input, int index) {
+        return false;
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();
