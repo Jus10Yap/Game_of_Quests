@@ -708,7 +708,9 @@ public class Main {
     }
 
     public void resolveQuest(List<Player> previousWinners, int numStages) {
-       
+        for (Player winner : previousWinners) {
+            winner.addShields(numStages);
+        }
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
