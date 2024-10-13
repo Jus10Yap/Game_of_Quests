@@ -299,6 +299,10 @@ public class Main {
         return false;
     }
 
+    public boolean isValidCardForStage(Card card, List<Card> stageCards) {
+        return true;
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();

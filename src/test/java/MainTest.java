@@ -1160,4 +1160,49 @@ class MainTest {
         String negativeInput = "-1";
         assertFalse(main.isValidCardPosition(negativeInput, 0), "Negative position should be invalid.");
     }
+
+    @Test
+    @DisplayName("RESP_19_test_01: Test validity of Foe Card for stage")
+    void RESP_19_test_01() {
+        List<Card> stageCards = new ArrayList<>();
+        FoeCard f10 = new FoeCard("F10", 10);
+        assertTrue(main.isValidCardForStage(f10, stageCards), "Foe card should be valid when stage is empty");
+
+        stageCards.add(f10);
+        FoeCard f15 = new FoeCard("F15", 15);
+        assertFalse(main.isValidCardForStage(f15, stageCards), "Only one Foe card is allowed in the stage");
+    }
+
+    @Test
+    @DisplayName("RESP_19_test_02: Test validity of Weapon Card for stage")
+    void RESP_19_test_02() {
+        List<Card> stageCards = new ArrayList<>();
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        assertTrue(main.isValidCardForStage(s10, stageCards), "Weapon card should be valid when stage is empty");
+
+        stageCards.add(s10);
+        assertFalse(main.isValidCardForStage(s10, stageCards), "No repeated Weapon cards are allowed");
+
+        WeaponCard b15 = new WeaponCard("B15", 15);
+        assertTrue(main.isValidCardForStage(b15, stageCards), "Different Weapon card should be valid");
+    }
+
+    @Test
+    @DisplayName("RESP_19_test_03: Test validity of Card for stage")
+    void RESP_19_test_03() {
+        List<Card> stageCards = new ArrayList<>();
+        QuestCard q2 = new QuestCard("Q2", 2);
+        assertFalse(main.isValidCardForStage(q2, stageCards), "Card must be either a FoeCard or WeaponCard");
+    }
+
+    @Test
+    @DisplayName("RESP_19_test_04: Test validity of Foe Card when Weapon Cards are present")
+    void RESP_19_test_04() {
+        List<Card> stageCards = new ArrayList<>();
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        stageCards.add(s10);
+
+        FoeCard f10 = new FoeCard("F10", 10);
+        assertTrue(main.isValidCardForStage(f10, stageCards), "Foe card is valid since there is only a weapon card");
+    }
 }
