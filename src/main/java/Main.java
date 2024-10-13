@@ -145,6 +145,27 @@ public class Main {
                     trimHand(currentPlayer, scanner);
                 }
             }
+            case "Prosperity" -> {
+                System.out.println("\n[Game] All players will draw 2 adventure cards!");
+
+                int index = this.currentPlayerIndex;
+                for (int i = 0; i < NUM_PLAYERS; i++) {
+                    Player player = players.get((index + i) % NUM_PLAYERS);
+
+                    System.out.println("[Game] " + player.getName() + " draws 2 adventure cards!");
+                    for (int j = 0; j < 2; j++) {
+                        Card drawnCard = adventureDeck.drawCard();
+                        player.addCardToHand(drawnCard);
+                    }
+
+                    // Check if the player needs to trim their hand
+                    if (player.getHand().size() > 12) {
+                        System.out.println("[Game] " + player.getName()
+                                + " has more than 12 cards, starting hand trimming process.");
+                        trimHand(player, scanner);
+                    }
+                }
+            }
         }
     }
 
