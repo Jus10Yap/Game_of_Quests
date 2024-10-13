@@ -1759,26 +1759,114 @@ class MainTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        // Simulate user input
         String input = "play\nwithdraw\nplay\n"; // P3 chooses to play, P1 withdraws, and P2 plays
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
         List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
 
-        // Assert that the correct player order is followed
         String output = outputStream.toString();
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
         System.out.println(output);
 
-        // Check if P3 is prompted first, followed by P1, and then P2
         assertTrue(output.contains("[Game] P3"), "P3 should be prompted first as the current player.");
         assertTrue(output.contains("[Game] P1"), "P1 should be prompted second.");
         assertTrue(output.contains("[Game] P2"), "P2 should be prompted last.");
 
-        // Verify the participants list
         assertEquals(2, participants.size(), "Should be two players in list of participants");
         assertFalse(participants.contains(players.get(0)), "P1 should not be in the list since they withdrew.");
         assertTrue(participants.contains(players.get(1)), "P2 should participate.");
         assertTrue(participants.contains(players.get(2)), "P3 should participate.");
+    }
+
+    @Test
+    @DisplayName("RESP_26_test_01: Test player draws a card when they choose to participate")
+    void RESP_26_test_01() {
+        main.setCurrentPlayerIndex(0);
+        Player p1 = players.get(0);
+        List<Player> eligibleParticipants = Arrays.asList(p1); // P1 is eligible
+        Set<Player> withdrawnPlayers = new HashSet<>();
+
+        List<Card> hand = main.getAdventureDeck().drawMultipleCards(11); // Give P1 11 cards
+        p1.setHand(hand);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "play\n"; // P1 chooses to play
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(1, participants.size(), "P1 should choose to participate.");
+
+        main.handleParticipation(p1, scanner);
+        assertEquals(12, p1.getHand().size(), "P1 should have drawn 1 card.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
+    }
+
+    @Test
+    @DisplayName("RESP_26_test_02: Test player's hand is trimmed when exceeding limit after drawing")
+    void RESP_26_test_02() {
+        main.setCurrentPlayerIndex(0);
+        Player p1 = players.get(0);
+        List<Player> eligibleParticipants = Arrays.asList(p1); // P1 is eligible
+        Set<Player> withdrawnPlayers = new HashSet<>();
+
+        List<Card> hand = main.getAdventureDeck().drawMultipleCards(12); // Give P1 12 cards
+        p1.setHand(hand);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "play\n0\n1"; // P1 chooses to play
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(1, participants.size(), "P1 should choose to participate.");
+
+        main.handleParticipation(p1, scanner);
+        assertEquals(12, p1.getHand().size(), "P1 should trim hand to 12 cards.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
+        assertTrue(output.contains("[Game] P1 has more than 12 cards and needs to trim their hand."),
+                "P1 should be prompted to trim their hand.");
+    }
+
+    @Test
+    @DisplayName("RESP_26_test_03: Test player draws a card and does not trim when hand is below limit")
+    void RESP_26_test_03() {
+        main.setCurrentPlayerIndex(0);
+        Player p1 = players.get(0);
+        List<Player> eligibleParticipants = Arrays.asList(p1); // P1 is eligible
+        Set<Player> withdrawnPlayers = new HashSet<>();
+
+        List<Card> hand = main.getAdventureDeck().drawMultipleCards(10); // Give P1 10 cards
+        p1.setHand(hand);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "play\n"; // P1 chooses to play
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(1, participants.size(), "P1 should choose to participate.");
+
+        main.handleParticipation(p1, scanner);
+        assertEquals(11, p1.getHand().size(), "P1 should have 11 cards, no trimming required.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
     }
 }
