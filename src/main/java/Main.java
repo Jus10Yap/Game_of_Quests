@@ -256,6 +256,10 @@ public class Main {
         return true; // Valid sponsor
     }
 
+    public int promptForSponsorship(QuestCard questCard, Scanner scanner) {
+        return -1;
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();

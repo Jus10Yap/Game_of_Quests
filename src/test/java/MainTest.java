@@ -950,4 +950,166 @@ class MainTest {
         // P5 is not a valid sponsor
         assertFalse(isInvalid, "P2 should not be a valid sponsor with no cards.");
     }
+
+    @Test
+    @DisplayName("RESP_17_test_01: Test when P1 agrees to sponsor the quest")
+    public void RESP_17_test_01() throws IOException {
+        QuestCard questCard = new QuestCard("Q2", 2); // Quest with 2 stages
+
+        main.setCurrentPlayerIndex(0); // P1
+        Player p1 = players.get(0);
+
+        FoeCard f10 = new FoeCard("F10", 10);
+        FoeCard f15 = new FoeCard("F15", 15);
+        WeaponCard d5 = new WeaponCard("D5", 5);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        p1.addCardToHand(f10);
+        p1.addCardToHand(f15);
+        p1.addCardToHand(d5);
+        p1.addCardToHand(h10);
+        p1.addCardToHand(s10);
+
+        assertTrue(main.isValidSponsor(p1, questCard.getStages()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "y\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        // Prompt for sponsorship
+        int sponsorIndex = main.promptForSponsorship(questCard, scanner);
+
+        assertEquals(0, sponsorIndex, "The first player (P1) should sponsor the quest.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        // Check if expected message is in captured output
+        assertTrue(output.contains("[Game] P1 is sponsoring the quest!"), "P1 should be the sponsor.");
+    }
+
+    @Test
+    @DisplayName("RESP_17_test_02: Test when all players decline sponsorship")
+    public void RESP_17_test_02() {
+        String input = "n\nn\nn\nn\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        QuestCard questCard = new QuestCard("Q2", 2); // Quest with 2 stages
+
+        main.setCurrentPlayerIndex(0); // Start with P1
+        for (Player player : players) {
+            FoeCard f10 = new FoeCard("F10", 10);
+            FoeCard f15 = new FoeCard("F15", 15);
+            WeaponCard d5 = new WeaponCard("D5", 5);
+            WeaponCard h10 = new WeaponCard("H10", 10);
+            WeaponCard s10 = new WeaponCard("S10", 10);
+            player.addCardToHand(f10);
+            player.addCardToHand(f15);
+            player.addCardToHand(d5);
+            player.addCardToHand(h10);
+            player.addCardToHand(s10);
+            assertTrue(main.isValidSponsor(player, questCard.getStages()));
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Prompt for sponsorship
+        int sponsorIndex = main.promptForSponsorship(questCard, scanner);
+
+        assertEquals(-1, sponsorIndex, "No player should sponsor the quest.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] No player has chosen to sponsor the quest."),
+                "The game should announce no sponsor.");
+    }
+
+    @Test
+    @DisplayName("RESP_17_test_03: Test when invalid input is given and game prompts again")
+    public void RESP_17_test_03() {
+        String input = "invalid\ny\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        QuestCard questCard = new QuestCard("Q2", 2); // Quest with 2 stages
+
+        main.setCurrentPlayerIndex(0); // P1
+        Player p1 = players.get(0);
+
+        FoeCard f10 = new FoeCard("F10", 10);
+        FoeCard f15 = new FoeCard("F15", 15);
+        WeaponCard d5 = new WeaponCard("D5", 5);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        p1.addCardToHand(f10);
+        p1.addCardToHand(f15);
+        p1.addCardToHand(d5);
+        p1.addCardToHand(h10);
+        p1.addCardToHand(s10);
+
+        assertTrue(main.isValidSponsor(p1, questCard.getStages()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Prompt for sponsorship
+        int sponsorIndex = main.promptForSponsorship(questCard, scanner);
+
+        assertEquals(0, sponsorIndex, "P1 should sponsor the quest after giving correct input.");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(output.contains("[Game] Invalid input. Please enter 'y' or 'n'."),
+                "The game should prompt again for valid input.");
+        assertTrue(output.contains("[Game] P1 is sponsoring the quest!"),
+                "P1 should be confirmed as the sponsor after valid input.");
+    }
+
+    @Test
+    @DisplayName("RESP_17_test_04: Test P2 is current player but declines to sponsor and P2 accepts to sponsor")
+    public void RESP_17_test_04() {
+        QuestCard questCard = new QuestCard("Q2", 2); // Quest with 2 stages
+
+        String input = "n\ny\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        main.setCurrentPlayerIndex(1); // P2
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+
+        FoeCard f10 = new FoeCard("F10", 10);
+        FoeCard f15 = new FoeCard("F15", 15);
+        WeaponCard d5 = new WeaponCard("D5", 5);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        p2.addCardToHand(f10);
+        p2.addCardToHand(f15);
+        p2.addCardToHand(d5);
+        p2.addCardToHand(h10);
+        p2.addCardToHand(s10);
+
+        p3.addCardToHand(f10);
+        p3.addCardToHand(f15);
+        p3.addCardToHand(d5);
+        p3.addCardToHand(h10);
+        p3.addCardToHand(s10);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Prompt for sponsorship
+        int sponsorIndex = main.promptForSponsorship(questCard, scanner);
+
+        assertEquals(2, sponsorIndex, "P3 should sponsor the quest P2 declines to sponsor");
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(output.contains("[Game] P2 has chosen not to sponsor the quest."),
+                "P2 should choose not to sponsor the quest");
+        assertTrue(output.contains("[Game] P3 is sponsoring the quest!"), "P3 should be confirmed as the sponsor");
+    }
 }
