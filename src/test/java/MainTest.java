@@ -2116,4 +2116,116 @@ class MainTest {
         assertTrue(output.contains("[Game] Invalid card for this stage. No repeated Weapon cards per attack."),
                 "Should indicate repeated card addition.");
     }
+
+    @Test
+    @DisplayName("RESP_30_test_01: Test all players losing the stage")
+    void RESP_30_test_01() {
+        List<List<Card>> attackingCards = new ArrayList<>(); // ["S10"],["S10"],["H10"]
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        attackingCards.add(Arrays.asList(s10));
+        attackingCards.add(Arrays.asList(s10));
+        attackingCards.add(Arrays.asList(h10));
+        List<Integer> attackIndices = new ArrayList<>(); // P2, P3, P4
+        attackIndices.add(1);
+        attackIndices.add(2);
+        attackIndices.add(3);
+        List<List<Card>> questCards = new ArrayList<>(); // For stage 1: ["F5", "S10"]
+        FoeCard f5 = new FoeCard("F5", 5);
+        questCards.add(Arrays.asList(f5, s10));
+        List<Player> previousWinners = new ArrayList<>(); // Empty
+        Set<Player> withdrawnPlayers = new HashSet<>(); // Empty
+        int stageIndex = 0;
+        main.resolveAttacks(questCards, stageIndex, attackingCards, attackIndices, previousWinners, withdrawnPlayers);
+        // P1 is not in either
+        assertFalse(withdrawnPlayers.contains(players.get(0)));
+        assertFalse(previousWinners.contains(players.get(0)));
+        // P2, P3, P4 lost
+        assertTrue(withdrawnPlayers.contains(players.get(1)));
+        assertFalse(previousWinners.contains(players.get(1)));
+        assertTrue(withdrawnPlayers.contains(players.get(2)));
+        assertFalse(previousWinners.contains(players.get(2)));
+        assertTrue(withdrawnPlayers.contains(players.get(3)));
+        assertFalse(previousWinners.contains(players.get(3)));
+    }
+
+    @Test
+    @DisplayName("RESP_30_test_02: Test all players winning the stage")
+    void RESP_30_test_02() {
+        List<List<Card>> attackingCards = new ArrayList<>(); // ["S10","H10"],["S10","H10"],["S10","H10"]
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        attackingCards.add(Arrays.asList(s10, h10));
+        attackingCards.add(Arrays.asList(s10, h10));
+        attackingCards.add(Arrays.asList(s10, h10));
+        List<Integer> attackIndices = new ArrayList<>(); // P2, P3, P4
+        attackIndices.add(1);
+        attackIndices.add(2);
+        attackIndices.add(3);
+        List<List<Card>> questCards = new ArrayList<>();
+        FoeCard f5 = new FoeCard("F5", 5);
+        questCards.add(Arrays.asList(f5, s10));
+        List<Player> previousWinners = new ArrayList<>();
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        int stageIndex = 0;
+
+        main.resolveAttacks(questCards, stageIndex, attackingCards, attackIndices, previousWinners, withdrawnPlayers);
+
+        assertFalse(withdrawnPlayers.contains(players.get(1)));
+        assertFalse(withdrawnPlayers.contains(players.get(2)));
+        assertFalse(withdrawnPlayers.contains(players.get(3)));
+        assertTrue(previousWinners.contains(players.get(1)));
+        assertTrue(previousWinners.contains(players.get(2)));
+        assertTrue(previousWinners.contains(players.get(3)));
+    }
+
+    @Test
+    @DisplayName("RESP_30_test_03: Test P1 winning the attack while P2 and P3 lose")
+    void RESP_30_test_03() {
+        List<List<Card>> attackingCards = new ArrayList<>(); // ["H10"],["S10"],["B15"]
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        WeaponCard b15 = new WeaponCard("B15", 15);
+        attackingCards.add(Arrays.asList(b15));
+        attackingCards.add(Arrays.asList(h10));
+        attackingCards.add(Arrays.asList(s10));
+        List<Integer> attackIndices = new ArrayList<>(); // P1, P2, P3
+        attackIndices.add(0);
+        attackIndices.add(1);
+        attackIndices.add(2);
+        List<List<Card>> questCards = new ArrayList<>();
+        FoeCard f5 = new FoeCard("F5", 5);
+        questCards.add(Arrays.asList(f5, s10));
+        List<Player> previousWinners = new ArrayList<>();
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        int stageIndex = 0;
+        main.resolveAttacks(questCards, stageIndex, attackingCards, attackIndices, previousWinners, withdrawnPlayers);
+        // P1 wins
+        assertTrue(previousWinners.contains(players.get(0)));
+        assertFalse(withdrawnPlayers.contains(players.get(0)));
+        // P2, P3 lose
+        assertFalse(previousWinners.contains(players.get(1)));
+        assertTrue(withdrawnPlayers.contains(players.get(1)));
+        assertFalse(previousWinners.contains(players.get(2)));
+        assertTrue(withdrawnPlayers.contains(players.get(2)));
+    }
+
+    @Test
+    @DisplayName("RESP_30_test_04: Test no participants")
+    void RESP_30_test_04() {
+        List<List<Card>> attackingCards = new ArrayList<>();
+        List<Integer> attackIndices = new ArrayList<>(); // No participants
+        List<List<Card>> questCards = new ArrayList<>();
+        FoeCard f5 = new FoeCard("F5", 5);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        questCards.add(Arrays.asList(f5, s10));
+        List<Player> previousWinners = new ArrayList<>();
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        int stageIndex = 0;
+
+        main.resolveAttacks(questCards, stageIndex, attackingCards, attackIndices, previousWinners, withdrawnPlayers);
+
+        assertTrue(previousWinners.isEmpty());
+        assertTrue(withdrawnPlayers.isEmpty());
+    }
 }

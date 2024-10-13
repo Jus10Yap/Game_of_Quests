@@ -672,6 +672,10 @@ public class Main {
         return attackCards;
     }
 
+    public void resolveAttacks(List<List<Card>> questCards, int stageIndex, List<List<Card>> attackingCards,
+                               List<Integer> attackIndices, List<Player> previousWinners, Set<Player> withdrawnPlayers) {
+    }
+
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
         Player currentPlayer = players.get(currentPlayerIndex);
         System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");
