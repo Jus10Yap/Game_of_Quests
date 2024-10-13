@@ -72,6 +72,15 @@ public class Deck {
         return drawnCards;
     }
 
+    public void removeCard(String name) {
+        for (Card card : cards) {
+            if (name.equals(card.getName())) {
+                cards.remove(card);
+                break;
+            }
+        }
+    }
+
     // Getters
     // Returns the size of the deck
     public int getSize() {

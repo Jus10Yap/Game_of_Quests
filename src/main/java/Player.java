@@ -67,6 +67,15 @@ public class Player {
         hand.add(card);
     }
 
+    public boolean hasCard(String name) {
+        for (Card card : hand) {
+            if (name.equals(card.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Getters
     public String getName() {
         return name;

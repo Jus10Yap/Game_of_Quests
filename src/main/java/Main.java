@@ -873,6 +873,13 @@ public class Main {
         moveToNextPlayer(scanner);
     }
 
+    public void playGame() {
+        System.out.println("[Game] Welcome Players! Starting game..");
+        while (ongoing) {
+            playRound();
+        }
+    }
+
     // Getters
     public Deck getAdventureDeck() {
         return adventureDeck;
@@ -908,6 +915,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        System.out.println("Iteration 1 of a game of quests by Justine");
+        Main game = new Main();
+        game.playGame();
     }
 }
