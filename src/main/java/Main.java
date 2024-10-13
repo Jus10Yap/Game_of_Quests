@@ -484,10 +484,36 @@ public class Main {
     public List<Player> getEligibleParticipants(int sponsorIndex, List<Player> players, List<Player> previousWinners,
                                                 Set<Player> withdrawnPlayers, int stageNumber) {
         List<Player> eligibleParticipants = new ArrayList<>();
+
+        if (stageNumber == 1) {
+            // At the first stage, all players except the sponsor are eligible
+            for (int i = 0; i < players.size(); i++) {
+                if (i != sponsorIndex) {
+                    eligibleParticipants.add(players.get(i));
+                }
+            }
+        } else {
+            // Subsequent stages: Only the previous stage's winners are eligible
+            for (Player player : previousWinners) {
+                if (!withdrawnPlayers.contains(player)) {
+                    eligibleParticipants.add(player);
+                }
+            }
+        }
+
         return eligibleParticipants;
     }
 
     public void displayEligibleParticipants(List<Player> eligibleParticipants, int stageNumber) {
+        System.out.println("[Game] Eligible participants for stage " + stageNumber + ":");
+
+        if (eligibleParticipants.isEmpty()) {
+            System.out.println("[Game] There are no eligible participants for this stage.");
+        } else {
+            for (Player player : eligibleParticipants) {
+                System.out.println(player.getName());
+            }
+        }
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
