@@ -219,7 +219,17 @@ public class Main {
     }
 
     public void moveToNextPlayer(Scanner scanner) {
-       
+        // Ask player to leave hot seat by hitting return key
+        System.out.println("[Game] Your turn is complete, please pass the device to the next player.");
+        System.out.println("[Game] Press 'Enter' to continue to the next player's turn.");
+        scanner.nextLine();
+        System.out.println("[" + players.get(currentPlayerIndex).getName() + "] <Enter>");
+        // Flush display
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+        // Call next player
+        System.out.println(
+                "\n[Game] The next player is " + players.get(getNextPlayerIndex()).getName() + "! Summon thee.");
     }
 
     public void playRound() {
@@ -252,6 +262,8 @@ public class Main {
         checkForWinners();
 
         // End round and move to the next player
+        Scanner scanner = new Scanner(System.in);
+        moveToNextPlayer(scanner);
     }
 
     // Getters
@@ -280,8 +292,7 @@ public class Main {
     }
 
     public int getNextPlayerIndex() {
-
-        return 0;
+        return (currentPlayerIndex + 1) % NUM_PLAYERS;
     }
 
     // Setters
