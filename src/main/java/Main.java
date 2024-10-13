@@ -287,6 +287,15 @@ public class Main {
     }
 
     public boolean isValidCardPosition(String input, int index) {
+        Player sponsor = players.get(index);
+        try {
+            int pos = Integer.parseInt(input);
+            if (pos >= 0 && pos < sponsor.getHand().size()) {
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("[Game] Invalid Card Position.");
+        }
         return false;
     }
 
