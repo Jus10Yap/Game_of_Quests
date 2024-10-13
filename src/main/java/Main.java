@@ -256,7 +256,33 @@ public class Main {
         return true; // Valid sponsor
     }
 
+    public String promptForInput(Scanner scanner, Player player, String message) {
+        System.out.println(message);
+        String input = scanner.nextLine().trim();
+        System.out.println("[" + player.getName() + "] " + input);
+        return input;
+    }
+
     public int promptForSponsorship(QuestCard questCard, Scanner scanner) {
+        int index = getCurrentPlayerIndex();
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            Player player = players.get((index + i) % NUM_PLAYERS);
+            if (isValidSponsor(player, questCard.getStages())) {
+                String message = "[Game] " + player.getName() + ", do you want to sponsor the current quest? (y/n)";
+                String response = promptForInput(scanner, player, message).toLowerCase();
+
+                if (response.equals("y")) {
+                    System.out.println("[Game] " + player.getName() + " is sponsoring the quest!");
+                    return (index + i) % NUM_PLAYERS; // Return the index of the player who said yes
+                } else if (response.equals("n")) {
+                    System.out.println("[Game] " + player.getName() + " has chosen not to sponsor the quest.");
+                } else {
+                    System.out.println("[Game] Invalid input. Please enter 'y' or 'n'.");
+                    i--;
+                }
+            }
+        }
+        System.out.println("[Game] No player has chosen to sponsor the quest."); // All players said no
         return -1;
     }
 
