@@ -300,6 +300,23 @@ public class Main {
     }
 
     public boolean isValidCardForStage(Card card, List<Card> stageCards) {
+        if (card instanceof FoeCard) {
+            // Only one foe card is allowed
+            for (Card c : stageCards) {
+                if (c instanceof FoeCard) {
+                    return false;
+                }
+            }
+        } else if (card instanceof WeaponCard) {
+            // No repeated weapon cards
+            for (Card c : stageCards) {
+                if (c.getName().equals(card.getName())) {
+                    return false;
+                }
+            }
+        } else {
+            return false; // Card is neither a FoeCard or WeaponCard
+        }
         return true;
     }
 
