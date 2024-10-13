@@ -108,6 +108,30 @@ public class Main {
         }
     }
 
+    public void playRound() {
+        // Player takes their turn
+        changeCurrentPlayer();
+
+        // Indicate whose turn it is
+        System.out.println("\n[Game] Hello " + players.get(currentPlayerIndex).getName() + "! Here is your current hand:");
+
+        // Display current player hand in sorted order
+        players.get(currentPlayerIndex).displayHand();
+
+        // The game ‘draws’ (i.e., displays) the next event card
+        Card drawnCard = eventDeck.drawCard();
+
+        // Handle Event or Quest Card
+
+        // Put drawn card on discard pile
+        eventDeck.discardCard(drawnCard);
+
+        // Check for winners at the end of the round
+        checkForWinners();
+
+        // End round and move to the next player
+    }
+
     // Getters
     public Deck getAdventureDeck() {
         return adventureDeck;
