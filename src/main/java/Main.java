@@ -749,7 +749,77 @@ public class Main {
     }
 
     public void playQuest(QuestCard questCard, int sponsorIndex, List<List<Card>> questCards, Scanner scanner) {
-   
+        List<Player> previousWinners = new ArrayList<>();
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants;
+        int stageNumber;
+        int index = currentPlayerIndex;
+
+        // Iterate through each stage of the quest
+        for (int stageIndex = 0; stageIndex < questCard.getStages(); stageIndex++) {
+            stageNumber = stageIndex + 1;
+
+            // Determine and display eligible participants
+            eligibleParticipants = getEligibleParticipants(sponsorIndex, players, previousWinners, withdrawnPlayers,
+                    stageNumber);
+            displayEligibleParticipants(eligibleParticipants, stageNumber);
+
+            // Prompt each eligible participant whether they withdraw or continue
+            List<Player> participants = promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+
+            // Check if no participants remain for the current stage
+            if (eligibleParticipants.isEmpty() || participants.isEmpty()) {
+                System.out.println("[Game] No participants left for stage " + stageNumber + ".");
+                endQuest(sponsorIndex, questCards, questCard.getStages(), scanner);
+                return;
+            }
+
+            for (int i = 0; i < NUM_PLAYERS; i++) {
+                Player participant = players.get((index + i) % NUM_PLAYERS);
+
+                if (participants.contains(participant)) {
+                    handleParticipation(participant, scanner); // Participant draws 1 adventure card
+                }
+            }
+
+            System.out.println("[Game] Playing stage " + stageNumber);
+            List<List<Card>> attackingCards = new ArrayList<>();
+            List<Integer> attackIndices = new ArrayList<>();
+
+            // Each participant for the current stage in turn sets up a valid attack
+            for (int i = 0; i <= NUM_PLAYERS; i++) {
+                Player participant = players.get((index + i) % NUM_PLAYERS);
+                if (participants.contains(participant) && !attackIndices.contains((index + i) % NUM_PLAYERS)) {
+                    List<Card> attackCards = setupAttack((index + i) % NUM_PLAYERS, scanner); // Player sets up attack
+                    attackingCards.add(attackCards);
+                    attackIndices.add((index + i) % NUM_PLAYERS);
+                }
+            }
+
+            // Game resolves the attack(s) against the current stage
+            resolveAttacks(questCards, stageIndex, attackingCards, attackIndices, previousWinners, withdrawnPlayers);
+
+            // Discard all attack cards used by participants
+            discardAttackCards(attackingCards);
+
+            // If no one wins the stage, end the quest
+            if (previousWinners.isEmpty()) {
+                System.out.println("[Game] No participants won stage " + stageNumber + ".");
+                endQuest(sponsorIndex, questCards, questCard.getStages(), scanner);
+                return;
+            }
+
+            // Unless this is the last stage, the quest ends if there no eligible
+            // participants for the next
+            // stage. If this is the last stage, the shield total of each winner (if any) is
+            // increased and the
+            // quest ends.
+            if (stageNumber == questCard.getStages() && !previousWinners.isEmpty()) {
+                resolveQuest(previousWinners, questCard.getStages());
+                endQuest(sponsorIndex, questCards, questCard.getStages(), scanner);
+            }
+
+        }
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
@@ -762,7 +832,7 @@ public class Main {
             List<List<Card>> questCards = buildQuest(sponsorIndex, questCard, scanner);
 
             // play the quest
-
+            playQuest(questCard, sponsorIndex, questCards, scanner);
         } else {
             System.out.println("[Game] All players have declined to sponsor the quest. The quest card is discarded.");
         }
