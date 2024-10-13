@@ -576,6 +576,55 @@ public class Main {
     }
 
     public List<Card> addCardToAttack(String input, int participantIndex, List<Card> attackCards, Scanner scanner) {
+        Player participant = players.get(participantIndex);
+        while (true) {
+            if (input.equals("done")) {
+                System.out.println("[Game] Current attack cards:");
+                for (Card card : attackCards) {
+                    System.out.println(card.getName());
+                }
+                return attackCards;
+            }
+
+            if (!isValidCardPosition(input, participantIndex)) {
+                input = promptForInput(scanner, participant,
+                        "[Game] Invalid input. Please enter a valid card position:").toLowerCase();
+                continue;
+            }
+
+            int pos = Integer.parseInt(input);
+            Card selectedCard = participant.getHand().get(pos);
+
+            if (selectedCard == null) {
+                input = promptForInput(scanner, participant,
+                        "[Game] Selected card does not exist. Please try another position:");
+                continue;
+            }
+
+            if (!isValidCardForAttack(selectedCard, attackCards)) {
+                System.out.println("[Game] Invalid card for this stage. No repeated Weapon cards per attack.");
+                input = promptForInput(scanner, participant,
+                        "[Game] Enter the position of the card you want to add to the attack or press 'Done' to exit:")
+                        .toLowerCase();
+                continue;
+            }
+
+            attackCards.add(selectedCard);
+            participant.getHand().remove(pos);
+
+            System.out.println("[Game] " + participant.getName() + " has added " + attackCards.size()
+                    + " card(s) for his/her attack.");
+            System.out.println("[Game] Card added to attack: " + selectedCard.getName());
+
+            // Display current attack cards
+            System.out.println("[Game] Current attack cards:");
+            for (Card card : attackCards) {
+                System.out.println(card.getName());
+            }
+
+            break;
+        }
+
         return attackCards;
     }
 
