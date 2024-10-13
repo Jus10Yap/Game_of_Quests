@@ -233,7 +233,27 @@ public class Main {
     }
 
     public boolean isValidSponsor(Player player, int numberOfStages) {
-        return false; // Valid sponsor
+        int foeCardCount = 0;
+        int weaponCardCount = 0;
+
+        // Loop through the player's hand to count Foe and Weapon cards
+        for (Card card : player.getHand()) {
+            if (card instanceof FoeCard) {
+                foeCardCount++; // Increment foe card count
+            } else if (card instanceof WeaponCard) {
+                weaponCardCount++;
+            }
+        }
+
+        // Check if the player has enough Foe or Weapon cards
+        if (foeCardCount < numberOfStages) {
+            return false;
+        }
+
+        if (weaponCardCount < numberOfStages) {
+            return false;
+        }
+        return true; // Valid sponsor
     }
 
     public void playRound() {
