@@ -2249,4 +2249,75 @@ class MainTest {
 
         assertTrue(output.contains("[Game] Discarding card: "), "Game should display what cards are being discarded.");
     }
+
+    @Test
+    @DisplayName("RESP_32_test_01: Test shield total of each winner is increased when all players(except sponsor) win")
+    void RESP_32_test_01() {
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p4 = players.get(3);
+        List<Player> previousWinners = new ArrayList<>();
+        previousWinners.add(p1);
+        previousWinners.add(p2);
+        previousWinners.add(p4);
+
+        assertEquals(0, p1.getShields(), "P1 should not have shields yet.");
+        assertEquals(0, p2.getShields(), "P2 should not have shields yet.");
+        assertEquals(0, p4.getShields(), "P4 should not have shields yet.");
+
+        main.resolveQuest(previousWinners, 3);
+
+        assertEquals(3, p1.getShields(), "P1 should have 3 shields.");
+        assertEquals(3, p2.getShields(), "P2 should have 3 shields.");
+        assertEquals(3, p4.getShields(), "P4 should have 3 shields.");
+
+    }
+
+    @Test
+    @DisplayName("RESP_32_test_02: Test shield total of each winner with different amount of shields")
+    void RESP_32_test_02() {
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p4 = players.get(3);
+        List<Player> previousWinners = new ArrayList<>();
+        previousWinners.add(p1);
+        p1.addShields(2);
+        previousWinners.add(p2);
+        p2.addShields(5);
+        previousWinners.add(p4);
+
+        assertEquals(2, p1.getShields(), "P1 should have 2 shields.");
+        assertEquals(5, p2.getShields(), "P2 should have 5 shields.");
+        assertEquals(0, p4.getShields(), "P4 should not have shields yet.");
+
+        main.resolveQuest(previousWinners, 2);
+
+        assertEquals(4, p1.getShields(), "P1 should have 4 shields.");
+        assertEquals(7, p2.getShields(), "P2 should have 7 shields.");
+        assertEquals(2, p4.getShields(), "P4 should have 2 shields.");
+
+    }
+
+    @Test
+    @DisplayName("RESP_32_test_03: Test no winners")
+    void RESP_32_test_03() {
+        List<Player> previousWinners = new ArrayList<>(); // No winners
+
+        Player p1 = players.get(0);
+        Player p2 = players.get(1);
+        Player p3 = players.get(2);
+        Player p4 = players.get(3);
+
+        assertEquals(0, p1.getShields(), "P1 should not have shields.");
+        assertEquals(0, p2.getShields(), "P2 should not have shields.");
+        assertEquals(0, p3.getShields(), "P3 should not have shields.");
+        assertEquals(0, p4.getShields(), "P4 should not have shields.");
+
+        main.resolveQuest(previousWinners, 5);
+
+        assertEquals(0, p1.getShields(), "P1 should still have no shields.");
+        assertEquals(0, p2.getShields(), "P2 should still have no shields.");
+        assertEquals(0, p3.getShields(), "P3 should still have no shields.");
+        assertEquals(0, p4.getShields(), "P4 should still have no shields.");
+    }
 }
