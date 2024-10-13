@@ -111,7 +111,22 @@ public class Main {
 
     // Handle the event card and pass the Scanner object
     public void handleEventCard(EventCard card, Scanner scanner) {
+        String eventType = card.getName();
+        Player currentPlayer = players.get(currentPlayerIndex);
+        System.out.println("\n[Game] " + currentPlayer.getName() + " has drawn the " + eventType + " card!");
 
+        switch (eventType) {
+            case "Plague" -> {
+                System.out.println("\n[Game] " + currentPlayer.getName() + " loses 2 shields!");
+
+                // Player loses 2 shields, ensuring shields don't go below 0
+                int shieldsLost = Math.min(2, currentPlayer.getShields());
+                currentPlayer.addShields(-shieldsLost); // Deduct 2 shields or whatever is available
+
+                System.out.println(
+                        "[Game] " + currentPlayer.getName() + " now has " + currentPlayer.getShields() + " shields.");
+            }
+        }
     }
 
     public void playRound() {
@@ -128,6 +143,14 @@ public class Main {
         Card drawnCard = eventDeck.drawCard();
 
         // Handle Event or Quest Card
+        if (drawnCard instanceof EventCard) {
+            Scanner scanner = new Scanner(System.in);
+            handleEventCard((EventCard) drawnCard, scanner);
+        } else if (drawnCard instanceof QuestCard) {
+
+        } else {
+            System.out.println("\n[WARNING] Incorrect card found in event deck!!!\n");
+        }
 
         // Put drawn card on discard pile
         eventDeck.discardCard(drawnCard);
