@@ -698,7 +698,13 @@ public class Main {
     }
 
     public void discardAttackCards(List<List<Card>> attackingCards) {
-       
+        for (List<Card> attacks : attackingCards) {
+            for (Card card : attacks) {
+                System.out.println("[Game] Discarding card: " + card.getName());
+                adventureDeck.discardCard(card);
+            }
+        }
+        attackingCards.clear();
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
