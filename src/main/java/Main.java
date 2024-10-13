@@ -516,7 +516,37 @@ public class Main {
     }
 
     public List<Player> promptForParticipation(List<Player> eligibleParticipants, Set<Player> withdrawnPlayers, Scanner scanner) {
+        int index = getCurrentPlayerIndex();
+
         List<Player> participants = new ArrayList<>();
+
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            Player player = players.get((index + i) % NUM_PLAYERS);
+
+            if (eligibleParticipants.contains(player) && !withdrawnPlayers.contains(player)) {
+
+                String input;
+                boolean validInput = false; // Flag to track valid input
+
+                while (!validInput) {
+                    String message = "[Game] " + player.getName() + ", do you want to 'Play' or 'Withdraw'?";
+                    input = promptForInput(scanner, player, message).toLowerCase();
+
+                    if (input.equals("withdraw")) {
+                        withdrawnPlayers.add(player);
+                        System.out.println("[Game] " + player.getName() + " has withdrawn from the quest.");
+                        validInput = true;
+                    } else if (input.equalsIgnoreCase("play")) {
+                        participants.add(player);
+                        System.out.println("[Game] " + player.getName() + " will participate in the stage.");
+                        validInput = true;
+                    } else {
+                        System.out.println("[Game] Invalid input. Please enter 'play' or 'withdraw'.");
+                    }
+                }
+            }
+        }
+
         return participants; // Return the list of players who chose to play
     }
 
