@@ -232,6 +232,10 @@ public class Main {
                 "\n[Game] The next player is " + players.get(getNextPlayerIndex()).getName() + "! Summon thee.");
     }
 
+    public boolean isValidSponsor(Player player, int numberOfStages) {
+        return false; // Valid sponsor
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();

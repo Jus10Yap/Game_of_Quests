@@ -827,4 +827,127 @@ class MainTest {
         assertTrue(output.contains("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"),
                 "The hotseat display should be cleared after pressing <return>.");
     }
+
+    @Test
+    @DisplayName("RESP_16_test_01: Test if player is a valid sponsor")
+    public void RESP_16_test_01() {
+        Player p1 = players.get(0);
+        main.setCurrentPlayerIndex(0); // P1
+
+        int numberOfStages = 3;
+
+        FoeCard f10 = new FoeCard("F10", 10);
+        FoeCard f15 = new FoeCard("F15", 15);
+        FoeCard f20 = new FoeCard("F20", 20);
+        WeaponCard d5 = new WeaponCard("D5", 5);
+        WeaponCard h10 = new WeaponCard("H10", 10);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        p1.addCardToHand(f10);
+        p1.addCardToHand(f15);
+        p1.addCardToHand(f20);
+        p1.addCardToHand(d5);
+        p1.addCardToHand(h10);
+        p1.addCardToHand(s10);
+
+        boolean isValid = main.isValidSponsor(p1, numberOfStages);
+
+        // P1 is a valid sponsor
+        assertTrue(isValid, "P1 should be a valid sponsor with the current hand.");
+    }
+
+    @Test
+    @DisplayName("RESP_16_test_02: Test if player cannot sponsor with insufficient total cards")
+    public void RESP_16_test_02() {
+        Player p2 = players.get(1);
+        main.setCurrentPlayerIndex(1); // P2
+
+        int numberOfStages = 3;
+
+        FoeCard f10 = new FoeCard("F10", 10);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        p2.addCardToHand(f10);
+        p2.addCardToHand(s10);
+
+        boolean isInvalid = main.isValidSponsor(p2, numberOfStages);
+
+        // P2 is not a valid sponsor
+        assertFalse(isInvalid, "Player should not be a valid sponsor with insufficient cards.");
+    }
+
+    @Test
+    @DisplayName("RESP_16_test_03: Test if player cannot sponsor with insufficient Foe cards")
+    public void RESP_16_test_03() {
+        Player p1 = players.get(0);
+        main.setCurrentPlayerIndex(0); // P1
+
+        int numberOfStages = 3;
+
+        // One Foe card
+        FoeCard f10 = new FoeCard("F10", 10);
+        p1.addCardToHand(f10);
+
+        boolean isValid = main.isValidSponsor(p1, numberOfStages);
+
+        // P1 is not a valid sponsor
+        assertFalse(isValid, "P1 should not be a valid sponsor with insufficient Foe cards.");
+    }
+
+    @Test
+    @DisplayName("RESP_16_test_04: Test if player can sponsor with repeated Weapon cards for a single stage")
+    public void RESP_16_test_04() {
+        Player p3 = players.get(2);
+        main.setCurrentPlayerIndex(2); // P3
+
+        int numberOfStages = 1; // Only one stage
+
+        // Add Foe and repeated Weapon cards
+        FoeCard f10 = new FoeCard("F10", 10);
+        WeaponCard s10a = new WeaponCard("S10", 10);
+        WeaponCard s10b = new WeaponCard("S10", 10); // Repeated
+
+        p3.addCardToHand(f10);
+        p3.addCardToHand(s10a);
+        p3.addCardToHand(s10b);
+
+        boolean isValid = main.isValidSponsor(p3, numberOfStages);
+
+        // P3 is a valid sponsor
+        assertTrue(isValid, "P3 should be a valid sponsor even with repeated Weapon cards for a single stage.");
+    }
+
+    @Test
+    @DisplayName("RESP_16_test_05: Test if player cannot sponsor without Weapon cards")
+    public void RESP_16_test_05() {
+        Player p4 = players.get(3);
+        main.setCurrentPlayerIndex(3); // P4
+
+        int numberOfStages = 1;
+
+        // Only add Foe cards
+        FoeCard f10 = new FoeCard("F10", 10);
+        FoeCard f15 = new FoeCard("F15", 15);
+
+        p4.addCardToHand(f10);
+        p4.addCardToHand(f15);
+
+        boolean isInvalid = main.isValidSponsor(p4, numberOfStages);
+
+        // P4 is not a valid sponsor
+        assertFalse(isInvalid, "P4 should not be a valid sponsor with sufficient Foe cards.");
+    }
+
+    @Test
+    @DisplayName("RESP_16_test_07: Test if player cannot sponsor with no cards")
+    public void RESP_16_test_07() {
+        Player p2 = players.get(1);
+        main.setCurrentPlayerIndex(1); // P2
+
+        int numberOfStages = 1;
+
+        // Player has no cards
+        boolean isInvalid = main.isValidSponsor(p2, numberOfStages);
+
+        // P5 is not a valid sponsor
+        assertFalse(isInvalid, "P2 should not be a valid sponsor with no cards.");
+    }
 }
