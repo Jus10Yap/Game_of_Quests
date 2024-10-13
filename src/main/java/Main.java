@@ -562,9 +562,19 @@ public class Main {
     }
 
     public boolean isValidCardForAttack(Card card, List<Card> attackCards) {
+        if (card instanceof WeaponCard) {
+            // No repeated weapon cards
+            for (Card c : attackCards) {
+                if (c.getName().equals(card.getName())) {
+                    return false;
+                }
+            }
+        } else {
+            return false; // Card is not a WeaponCard
+        }
         return true;
     }
-
+    
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
         Player currentPlayer = players.get(currentPlayerIndex);
         System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");
