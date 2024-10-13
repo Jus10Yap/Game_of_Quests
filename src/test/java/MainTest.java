@@ -2228,4 +2228,25 @@ class MainTest {
         assertTrue(previousWinners.isEmpty());
         assertTrue(withdrawnPlayers.isEmpty());
     }
+
+    @Test
+    @DisplayName("RESP_31_test_01: Test discarding attack cards after stage resolution")
+    void RESP_31_test_01() {
+        List<List<Card>> attackingCards = new ArrayList<>();
+        attackingCards.add(adventureDeck.drawMultipleCards(5));
+        attackingCards.add(adventureDeck.drawMultipleCards(5));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.discardAttackCards(attackingCards);
+        assertEquals(0, attackingCards.size(), "attacking cards should be empty and completely discarded");
+        assertEquals(10, adventureDeck.getDiscardPile().size(), "Adventure deck discard pile should have 10 cards");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Discarding card: "), "Game should display what cards are being discarded.");
+    }
 }
