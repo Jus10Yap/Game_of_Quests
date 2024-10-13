@@ -1560,4 +1560,225 @@ class MainTest {
         assertTrue(output.contains("P3"), "P3 should be displayed as eligible");
         assertFalse(output.contains("P1"), "P1 (the sponsor) should not be displayed");
     }
+
+    @Test
+    @DisplayName("RESP_25_test_01: Test player participates when input is 'Play'")
+    void RESP_25_test_01() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1)); // P1 and P2 are eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String input = "play\nwithdraw\n"; // P1 chooses to play
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(1, participants.size(), "Only one player in list of participants");
+        // Check output
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_02: Test player withdraws when input is 'Withdraw'")
+    void RESP_25_test_02() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1)); // P1 and P2 are eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Simulate user input
+        String input = "withdraw\nplay\n"; // P1 chooses to play
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(1, withdrawnPlayers.size(), "Only one player withdrew");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 has withdrawn from the quest."), "P1 should choose to withdraw.");
+        assertTrue(withdrawnPlayers.contains(players.get(0)), "P1 should be added to the withdrawn players.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_03: Test player is prompted again for invalid input")
+    void RESP_25_test_03() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1)); // P1 and P2 are eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Simulate user input with invalid response followed by valid response
+        String input = "invalid\ninvalid\nplay\nwithdraw\n"; // P1 enters invalid input first
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(1, participants.size(), "Only one player in list of participants");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("Invalid input. Please enter 'play' or 'withdraw'."),
+                "Player should see an invalid input message.");
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should eventually choose to play.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_04: Test withdrawn players are skipped")
+    void RESP_25_test_04() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1), players.get(2)); // P1, P2,
+        // and P3 are
+        // eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // P1 chooses to play, P2 chooses to withdraw, and P3 chooses to play
+        String input = "play\nwithdraw\nplay\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(2, participants.size(), "Should be two players in list of participants");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
+        assertTrue(withdrawnPlayers.contains(players.get(1)), "P2 should be added to the withdrawn players.");
+        assertFalse(output.contains("[Game] P2 will participate in the stage."),
+                "P2 should be skipped since they have withdrawn.");
+        assertTrue(output.contains("[Game] P3 will participate in the stage."), "P3 should choose to play.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_05: Test all players withdraw")
+    void RESP_25_test_05() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1), players.get(2)); // P1, P2,
+        // and P3 are
+        // eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // All players choose to withdraw
+        String input = "withdraw\nwithdraw\nwithdraw\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(0, participants.size(), "No players in list of participants");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(withdrawnPlayers.contains(players.get(0)), "P1 should be withdrawn.");
+        assertTrue(withdrawnPlayers.contains(players.get(1)), "P2 should be withdrawn.");
+        assertTrue(withdrawnPlayers.contains(players.get(2)), "P3 should be withdrawn.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_06: Test multiple invalid inputs before valid response")
+    void RESP_25_test_06() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0)); // P1 is eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Simulate invalid inputs followed by valid input
+        String input = "invalid\ninvalid\nwithdraw\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(0, participants.size(), "No players in list of participants");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Invalid input. Please enter 'play' or 'withdraw'."),
+                "Player should see an invalid input message.");
+        assertTrue(withdrawnPlayers.contains(players.get(0)), "P1 should be added to the withdrawn players.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_07: Test mixed responses from players")
+    void RESP_25_test_07() {
+        main.setCurrentPlayerIndex(0);
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1), players.get(2)); // P1, P2,
+        // and P3 are
+        // eligible
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // P1 chooses to play, P2 chooses to withdraw, and P3 chooses to play
+        String input = "play\nwithdraw\nplay\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        assertEquals(2, participants.size(), "Should be two players in list of participants");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
+        assertTrue(withdrawnPlayers.contains(players.get(1)), "P2 should be added to the withdrawn players.");
+        assertFalse(output.contains("[Game] P2 will participate in the stage."),
+                "P2 should be skipped since they have withdrawn.");
+        assertTrue(output.contains("[Game] P3 will participate in the stage."), "P3 should choose to play.");
+    }
+
+    @Test
+    @DisplayName("RESP_25_test_08: Test correct player is prompted first based on currentPlayerIndex")
+    void RESP_25_test_08() {
+        main.setCurrentPlayerIndex(2); // P3
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(2), players.get(1)); // P1, P3, P2
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Simulate user input
+        String input = "play\nwithdraw\nplay\n"; // P3 chooses to play, P1 withdraws, and P2 plays
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+
+        // Assert that the correct player order is followed
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        // Check if P3 is prompted first, followed by P1, and then P2
+        assertTrue(output.contains("[Game] P3"), "P3 should be prompted first as the current player.");
+        assertTrue(output.contains("[Game] P1"), "P1 should be prompted second.");
+        assertTrue(output.contains("[Game] P2"), "P2 should be prompted last.");
+
+        // Verify the participants list
+        assertEquals(2, participants.size(), "Should be two players in list of participants");
+        assertFalse(participants.contains(players.get(0)), "P1 should not be in the list since they withdrew.");
+        assertTrue(participants.contains(players.get(1)), "P2 should participate.");
+        assertTrue(participants.contains(players.get(2)), "P3 should participate.");
+    }
 }

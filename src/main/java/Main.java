@@ -481,8 +481,7 @@ public class Main {
         return questStages;
     }
 
-    public List<Player> getEligibleParticipants(int sponsorIndex, List<Player> players, List<Player> previousWinners,
-                                                Set<Player> withdrawnPlayers, int stageNumber) {
+    public List<Player> getEligibleParticipants(int sponsorIndex, List<Player> players, List<Player> previousWinners, Set<Player> withdrawnPlayers, int stageNumber) {
         List<Player> eligibleParticipants = new ArrayList<>();
 
         if (stageNumber == 1) {
@@ -514,6 +513,11 @@ public class Main {
                 System.out.println(player.getName());
             }
         }
+    }
+
+    public List<Player> promptForParticipation(List<Player> eligibleParticipants, Set<Player> withdrawnPlayers, Scanner scanner) {
+        List<Player> participants = new ArrayList<>();
+        return participants; // Return the list of players who chose to play
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
