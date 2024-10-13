@@ -714,6 +714,38 @@ public class Main {
     }
 
     public void endQuest(int sponsorIndex, List<List<Card>> questCards, int stages, Scanner scanner) {
+        int discardedCards = 0;
+        Player sponsor = players.get(sponsorIndex);
+        System.out.println("[Game] The quest has ended.");
+
+        // All cards used by the sponsor to build the quest are discarded
+        for (List<Card> stageCards : questCards) {
+            for (Card card : stageCards) {
+                System.out.println("[Game] Discarding card: " + card.getName());
+                adventureDeck.discardCard(card);
+                discardedCards++;
+            }
+        }
+
+        // Draws the same number of cards + the number of stages, and then possibly
+        // trims their hand
+        int totalCardsToDraw = discardedCards + stages;
+        for (int i = 0; i < totalCardsToDraw; i++) {
+            Card drawnCard = adventureDeck.drawCard();
+            if (drawnCard != null) {
+                sponsor.addCardToHand(drawnCard);
+                System.out.println("[Game] " + sponsor.getName() + " draws a card: " + drawnCard.getName());
+            } else {
+                System.out.println("[WARNING] No card was drawn???");
+                break;
+            }
+        }
+
+        // Check if the sponsor's hand exceeds 12 cards and trim if necessary
+        if (sponsor.getHand().size() > 12) {
+            System.out.println("[Game] " + sponsor.getName() + " has more than 12 cards and needs to trim their hand.");
+            trimHand(sponsor, scanner);
+        }
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
