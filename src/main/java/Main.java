@@ -320,6 +320,10 @@ public class Main {
         return true;
     }
 
+    public List<Card> addCardToStage(String input, int sponsorIndex, List<Card> stageCards, Scanner scanner) {
+        return stageCards;
+    }
+
     public void playRound() {
         // Player takes their turn
         changeCurrentPlayer();

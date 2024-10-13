@@ -1205,4 +1205,61 @@ class MainTest {
         FoeCard f10 = new FoeCard("F10", 10);
         assertTrue(main.isValidCardForStage(f10, stageCards), "Foe card is valid since there is only a weapon card");
     }
+
+    @Test
+    @DisplayName("RESP_20_test_01: Test adding a valid FoeCard to the stage")
+    void RESP_20_test_01() {
+        Scanner scanner = new Scanner(System.in);
+        List<Card> stageCards = new ArrayList<>();
+        Player sponsor = players.get(0);
+        sponsor.addCardToHand(new FoeCard("F10", 10));
+        sponsor.addCardToHand(new WeaponCard("S10", 10));
+
+        String input = "0";
+
+        List<Card> updatedStageCards = main.addCardToStage(input, 0, stageCards, scanner);
+
+        assertEquals(1, updatedStageCards.size(), "Stage should contain one card.");
+        assertTrue(updatedStageCards.get(0) instanceof FoeCard, "The added card should be a FoeCard.");
+    }
+
+    @Test
+    @DisplayName("RESP_20_test_02: Test adding a valid WeaponCard to the stage")
+    void RESP_20_test_02() {
+        Scanner scanner = new Scanner(System.in);
+        List<Card> stageCards = new ArrayList<>();
+        Player sponsor = players.get(0);
+        sponsor.addCardToHand(new WeaponCard("S10", 10));
+        sponsor.addCardToHand(new FoeCard("F10", 10));
+
+        String input = "0";
+
+        List<Card> updatedStageCards = main.addCardToStage(input, 0, stageCards, scanner); // Pass the scanner instance
+
+        assertEquals(1, updatedStageCards.size(), "Stage should contain one card.");
+        assertTrue(updatedStageCards.get(0) instanceof WeaponCard, "The added card should be a WeaponCard.");
+    }
+
+    @Test
+    @DisplayName("RESP_20_test_03: Test stage displays correct cards after additions")
+    void RESP_20_test_03() {
+        Scanner scanner = new Scanner(System.in);
+        List<Card> stageCards = new ArrayList<>();
+        Player sponsor = players.get(0);
+        FoeCard f10 = new FoeCard("F10", 10);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+
+        sponsor.addCardToHand(f10);
+        sponsor.addCardToHand(s10);
+
+        String input = "0";
+        main.addCardToStage(input, 0, stageCards, scanner);
+
+        input = "0";
+        main.addCardToStage(input, 0, stageCards, scanner);
+
+        assertEquals(2, stageCards.size(), "Stage should contain two cards.");
+        assertTrue(stageCards.contains(f10), "Stage should contain the FoeCard.");
+        assertTrue(stageCards.contains(s10), "Stage should contain the WeaponCard.");
+    }
 }
