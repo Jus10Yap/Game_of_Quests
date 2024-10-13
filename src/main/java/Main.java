@@ -674,6 +674,27 @@ public class Main {
 
     public void resolveAttacks(List<List<Card>> questCards, int stageIndex, List<List<Card>> attackingCards,
                                List<Integer> attackIndices, List<Player> previousWinners, Set<Player> withdrawnPlayers) {
+        for (int i = 0; i < attackIndices.size(); i++) {
+            int attackStrength = calculateAttackStrength(attackingCards.get(i));
+            Player participant = players.get(attackIndices.get(i));
+
+            if (attackStrength >= calculateStageValue(questCards.get(stageIndex))) {
+                // participants with an attack equal or greater to the value of the current
+                // stage are
+                // eligible for the next stage (if any).
+                System.out.println("[Game] " + participant.getName() + " wins this stage!");
+                if (!previousWinners.contains(participant)) {
+                    previousWinners.add(participant);
+                }
+            } else {
+                // Participants with an attack less than the value of the current stage lose and
+                // become ineligible to further participate in this quest
+                System.out.println("[Game] " + participant.getName()
+                        + " loses this stage and is ineligible to further participate in this quest.");
+                previousWinners.remove(participant);
+                withdrawnPlayers.add(participant);
+            }
+        }
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
