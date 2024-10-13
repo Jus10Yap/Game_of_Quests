@@ -1869,4 +1869,42 @@ class MainTest {
 
         assertTrue(output.contains("[Game] P1 will participate in the stage."), "P1 should choose to play.");
     }
+
+    @Test
+    @DisplayName("RESP_27_test_01: Test validity of Weapon Card for attack")
+    void RESP_27_test_01() {
+        List<Card> attackCards = new ArrayList<>();
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        WeaponCard b15 = new WeaponCard("B15", 15);
+        WeaponCard d5 = new WeaponCard("D5", 5);
+        assertTrue(main.isValidCardForAttack(s10, attackCards), "Weapon card should be valid when attack is empty");
+        attackCards.add(s10);
+        assertFalse(main.isValidCardForAttack(s10, attackCards), "No repeated Weapon cards are allowed");
+
+        assertTrue(main.isValidCardForAttack(b15, attackCards), "B15 Weapon card should be valid");
+        attackCards.add(b15);
+        assertTrue(main.isValidCardForAttack(d5, attackCards), "D5 Weapon card should be valid");
+
+    }
+
+    @Test
+    @DisplayName("RESP_27_test_02: Test validity of Card type for attack")
+    void RESP_27_test_02() {
+        List<Card> attackCards = new ArrayList<>();
+        QuestCard q2 = new QuestCard("Q2", 2);
+        assertFalse(main.isValidCardForAttack(q2, attackCards),
+                "This card is a Quest Card. Card must be a non-repeated Weapon Card.");
+
+        FoeCard f5 = new FoeCard("F5", 5);
+        assertFalse(main.isValidCardForAttack(f5, attackCards),
+                "This card is a Foe Card. Card must be a non-repeated Weapon Card.");
+
+        EventCard pros = new EventCard("Prosperity");
+        assertFalse(main.isValidCardForAttack(pros, attackCards),
+                "This card is an Event Card. Card must be a non-repeated Weapon Card.");
+
+        WeaponCard d5 = new WeaponCard("D5", 5);
+        assertTrue(main.isValidCardForAttack(d5, attackCards),
+                "This is a non-repeated Weapon Card. This card should be valid.");
+    }
 }

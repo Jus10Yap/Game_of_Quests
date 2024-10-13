@@ -561,6 +561,10 @@ public class Main {
         }
     }
 
+    public boolean isValidCardForAttack(Card card, List<Card> attackCards) {
+        return true;
+    }
+
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
         Player currentPlayer = players.get(currentPlayerIndex);
         System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");
