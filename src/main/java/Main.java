@@ -551,7 +551,14 @@ public class Main {
     }
 
     public void handleParticipation(Player player, Scanner scanner) {
-       
+        Card drawnCard = adventureDeck.drawCard();
+        player.addCardToHand(drawnCard);
+        System.out.println("[Game] " + player.getName() + " draws a card: " + drawnCard.getName());
+
+        if (player.getHand().size() > 12) {
+            System.out.println("[Game] " + player.getName() + " has more than 12 cards and needs to trim their hand.");
+            trimHand(player, scanner);
+        }
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
