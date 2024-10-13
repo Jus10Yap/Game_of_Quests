@@ -574,7 +574,11 @@ public class Main {
         }
         return true;
     }
-    
+
+    public List<Card> addCardToAttack(String input, int participantIndex, List<Card> attackCards, Scanner scanner) {
+        return attackCards;
+    }
+
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
         Player currentPlayer = players.get(currentPlayerIndex);
         System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");

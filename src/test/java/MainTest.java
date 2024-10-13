@@ -1907,4 +1907,100 @@ class MainTest {
         assertTrue(main.isValidCardForAttack(d5, attackCards),
                 "This is a non-repeated Weapon Card. This card should be valid.");
     }
+
+    @Test
+    @DisplayName("RESP_28_test_01: Test adding a valid card to the attack")
+    void RESP_28_test_01() {
+        main.setCurrentPlayerIndex(0);
+        Player participant = players.get(0);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        participant.addCardToHand(s10);
+
+        List<Card> attackCards = new ArrayList<>();
+        String input = "0\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.addCardToAttack(input, 0, attackCards, scanner);
+
+        assertEquals(1, attackCards.size(), "The attack should contain 1 card.");
+        assertTrue(attackCards.contains(s10), "The attack should include the selected weapon card.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] " + participant.getName() + " has added 1 card(s) for his/her attack."),
+                "Output should confirm the card was added.");
+        assertTrue(output.contains("[Game] Card added to attack: " + s10.getName()),
+                "Output should indicate which card was added.");
+    }
+
+    @Test
+    @DisplayName("RESP_28_test_02: Test adding a valid card to the attack after invalid card position")
+    void RESP_28_test_02() {
+        main.setCurrentPlayerIndex(0);
+        Player participant = players.get(0);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        participant.addCardToHand(s10);
+
+        List<Card> attackCards = new ArrayList<>();
+        String input = "4\n0\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.addCardToAttack(input, 0, attackCards, scanner);
+
+        assertEquals(1, attackCards.size(), "The attack should contain 1 card.");
+        assertTrue(attackCards.contains(s10), "The attack should include the selected weapon card.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Invalid input. Please enter a valid card position:"),
+                "Output should re-prompt and explain the invalidity.");
+        assertTrue(output.contains("[Game] " + participant.getName() + " has added 1 card(s) for his/her attack."),
+                "Output should confirm the card was added.");
+        assertTrue(output.contains("[Game] Card added to attack: " + s10.getName()),
+                "Output should indicate which card was added.");
+    }
+
+    @Test
+    @DisplayName("RESP_28_test_03: Test adding a valid card to the attack after invalid card type")
+    void RESP_28_test_03() {
+        main.setCurrentPlayerIndex(0);
+        Player participant = players.get(0);
+        FoeCard f15 = new FoeCard("F15", 15);
+        WeaponCard s10 = new WeaponCard("S10", 10);
+        participant.addCardToHand(f15);
+        participant.addCardToHand(s10);
+
+        List<Card> attackCards = new ArrayList<>();
+        String input = "0\n1\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.addCardToAttack(input, 0, attackCards, scanner);
+
+        assertEquals(1, attackCards.size(), "The attack should contain 1 card.");
+        assertTrue(attackCards.contains(s10), "The attack should include the selected weapon card.");
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("[Game] Invalid card for this stage. No repeated Weapon cards per attack."),
+                "Output should re-prompt and explain the invalidity.");
+        assertTrue(output.contains("[Game] " + participant.getName() + " has added 1 card(s) for his/her attack."),
+                "Output should confirm the card was added.");
+        assertTrue(output.contains("[Game] Card added to attack: " + s10.getName()),
+                "Output should indicate which card was added.");
+    }
 }
