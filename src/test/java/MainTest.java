@@ -470,4 +470,34 @@ class MainTest {
         assertTrue(hand.get(3) instanceof WeaponCard && hand.get(3).getName().equals("D5"),
                 "Fourth card should be duplicate Dagger (D5)");
     }
+
+    @Test
+    @DisplayName("RESP_10_test_01: Test Player draws a card from event deck")
+    public void RESP_10_test_01() {
+        int initialDeckSize = eventDeck.getSize();
+
+        assertTrue(initialDeckSize > 0, "Event deck should have cards before drawing");
+
+        Card drawnCard = eventDeck.drawCard();
+
+        assertEquals(initialDeckSize - 1, eventDeck.getSize(), "Event deck size should decrease by 1 after drawing");
+
+        assertNotNull(drawnCard, "A card should be drawn from the deck");
+    }
+
+    @Test
+    @DisplayName("RESP_10_test_02: Test drawing the last card from the event deck")
+    public void RESP_10_test_02() {
+        // Set up a deck with only one card
+        eventDeck.getCards().clear(); // Method to clear the deck
+        eventDeck.addCard(new EventCard("Prosperity")); // Add one final card
+
+        assertEquals(1, eventDeck.getSize(), "Deck should have exactly one card");
+
+        Card drawnCard = eventDeck.drawCard();
+
+        assertEquals(0, eventDeck.getSize(), "Deck should have no cards left after drawing the last card");
+        assertNotNull(drawnCard, "The last card should be drawn successfully");
+    }
+
 }
