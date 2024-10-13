@@ -321,6 +321,57 @@ public class Main {
     }
 
     public List<Card> addCardToStage(String input, int sponsorIndex, List<Card> stageCards, Scanner scanner) {
+        Player sponsor = players.get(sponsorIndex);
+
+        while (true) {
+            if (input.equals("done")) {
+                System.out.println("[Game] Current stage cards:");
+                for (Card card : stageCards) {
+                    System.out.println(card.getName());
+                }
+                return stageCards;
+            }
+
+            if (!isValidCardPosition(input, sponsorIndex)) {
+                input = promptForInput(scanner, sponsor,
+                        "[Game] Invalid input. Please enter a valid card position or press 'Done' to exit:")
+                        .toLowerCase();
+                continue;
+            }
+
+            int pos = Integer.parseInt(input);
+            Card selectedCard = sponsor.getHand().get(pos);
+
+            if (selectedCard == null) {
+                input = promptForInput(scanner, sponsor,
+                        "[Game] Selected card does not exist. Please try another position:");
+                continue;
+            }
+
+            if (!isValidCardForStage(selectedCard, stageCards)) {
+                System.out.println(
+                        "[Game] Invalid card for this stage. Only 1 Foe card is allowed and no repeated Weapon cards per stage.");
+                input = promptForInput(scanner, sponsor,
+                        "[Game] Enter the position of the card you want to add to the stage or press 'Done' to exit:")
+                        .toLowerCase();
+                continue;
+            }
+
+            stageCards.add(selectedCard);
+            sponsor.getHand().remove(pos);
+
+            System.out.println("[Game] Sponsor has added " + stageCards.size() + " card(s) to this stage.");
+            System.out.println("[Game] Card added to stage: " + selectedCard.getName());
+
+            // Display current stage cards
+            System.out.println("[Game] Current stage cards:");
+            for (Card card : stageCards) {
+                System.out.println(card.getName());
+            }
+
+            break;
+        }
+
         return stageCards;
     }
 
