@@ -412,11 +412,49 @@ public class Main {
 
     public int calculateStageValue(List<Card> stageCards) {
         int value = 0;
+        for (Card card : stageCards) {
+            if (card instanceof FoeCard) {
+                value += ((FoeCard) card).getValue();
+            } else if (card instanceof WeaponCard) {
+                value += ((WeaponCard) card).getValue();
+            }
+        }
         return value;
     }
 
+    private boolean isInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public List<Card> buildStage(int sponsorIndex, int prevStageValue, int stageNumber, Scanner scanner) {
+        Player sponsor = players.get(sponsorIndex);
+        System.out.println("[Game] Building stage number " + stageNumber);
         List<Card> stageCards = new ArrayList<>();
+        boolean stageComplete = false;
+        int currentStageValue = 0;
+
+        while (!stageComplete) {
+            sponsor.displayHand();
+
+            String input = promptForInput(scanner, sponsor,
+                    "[Game] Enter the position of the card you want to add to the stage or 'Quit' to finish: ")
+                    .toLowerCase();
+
+            if (input.equals("quit")) {
+                stageComplete = handleQuit(stageCards, currentStageValue, prevStageValue, stageNumber);
+            } else if (isInteger(input)) {
+                stageCards = addCardToStage(input, sponsorIndex, stageCards, scanner);
+                currentStageValue = calculateStageValue(stageCards);
+            } else {
+                System.out.println("[Game] Invalid input.");
+            }
+        }
+
         return stageCards;
     }
 
