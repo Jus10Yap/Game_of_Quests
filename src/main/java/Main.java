@@ -481,6 +481,15 @@ public class Main {
         return questStages;
     }
 
+    public List<Player> getEligibleParticipants(int sponsorIndex, List<Player> players, List<Player> previousWinners,
+                                                Set<Player> withdrawnPlayers, int stageNumber) {
+        List<Player> eligibleParticipants = new ArrayList<>();
+        return eligibleParticipants;
+    }
+
+    public void displayEligibleParticipants(List<Player> eligibleParticipants, int stageNumber) {
+    }
+
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
         Player currentPlayer = players.get(currentPlayerIndex);
         System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");

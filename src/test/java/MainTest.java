@@ -1485,4 +1485,79 @@ class MainTest {
         assertTrue(output.contains("[Game] Quest setup is complete!"),
                 "Output should indicate the quest setup is complete.");
     }
+
+    @Test
+    @DisplayName("RESP_24_test_01: Test all players except sponsor are eligible for the first stage")
+    void RESP_24_test_01() {
+        Player sponsor = players.get(0); // Sponsor is P1
+        List<Player> previousWinners = new ArrayList<>();
+        Set<Player> withdrawnPlayers = new HashSet<>();
+
+        List<Player> eligibleParticipants = main.getEligibleParticipants(0, players, previousWinners, withdrawnPlayers,
+                1); // Stage 1
+
+        assertFalse(eligibleParticipants.contains(sponsor), "Sponsor should not be eligible");
+        assertEquals(3, eligibleParticipants.size(), "There should be 3 eligible participants");
+        for (int i = 1; i < players.size(); i++) {
+            assertTrue(eligibleParticipants.contains(players.get(i)), "Player P" + (i + 1) + " should be eligible");
+        }
+    }
+
+    @Test
+    @DisplayName("RESP_24_test_02: Test only winners of the previous stage are eligible for the next stage")
+    void RESP_24_test_02() {
+        List<Player> previousWinners = new ArrayList<>();
+        previousWinners.add(players.get(2)); // P3 wins first stage
+
+        Set<Player> withdrawnPlayers = new HashSet<>();
+
+        List<Player> eligibleParticipants = main.getEligibleParticipants(0, players, previousWinners, withdrawnPlayers,
+                2); // Stage 2
+
+        assertEquals(1, eligibleParticipants.size(), "Only one player should be eligible for the second stage");
+        assertTrue(eligibleParticipants.contains(players.get(2)), "Player P3 should be eligible for the second stage");
+    }
+
+    @Test
+    @DisplayName("RESP_24_test_03: Test a player who withdrew cannot participate in the next stage")
+    void RESP_24_test_03() {
+        List<Player> previousWinners = new ArrayList<>();
+        previousWinners.add(players.get(1)); // P2 wins first stage
+
+        Set<Player> withdrawnPlayers = new HashSet<>();
+        withdrawnPlayers.add(players.get(2)); // P3 withdrew
+
+        List<Player> eligibleParticipants = main.getEligibleParticipants(0, players, previousWinners, withdrawnPlayers,
+                2); // Stage 2
+
+        assertEquals(1, eligibleParticipants.size(), "Only one player should be eligible for the second stage");
+        assertTrue(eligibleParticipants.contains(players.get(1)), "Player P2 should be eligible for the second stage");
+        assertFalse(eligibleParticipants.contains(players.get(2)),
+                "Player P3 should not be eligible since they withdrew");
+    }
+
+    @Test
+    @DisplayName("RESP_24_test_04: Test displaying eligible participants")
+    void RESP_24_test_04() {
+        List<Player> previousWinners = new ArrayList<>();
+        previousWinners.add(players.get(1)); // P2 wins first stage
+        previousWinners.add(players.get(2)); // P3 wins first stage
+
+        Set<Player> withdrawnPlayers = new HashSet<>();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        List<Player> eligibleParticipants = main.getEligibleParticipants(0, players, previousWinners, withdrawnPlayers,
+                2); // Stage 2
+        main.displayEligibleParticipants(eligibleParticipants, 2); // Display eligible participants
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+
+        assertTrue(output.contains("P2"), "P2 should be displayed as eligible");
+        assertTrue(output.contains("P3"), "P3 should be displayed as eligible");
+        assertFalse(output.contains("P1"), "P1 (the sponsor) should not be displayed");
+    }
 }
