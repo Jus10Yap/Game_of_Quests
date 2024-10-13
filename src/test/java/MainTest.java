@@ -2397,4 +2397,61 @@ class MainTest {
         assertTrue(output.contains("[Game] P1 draws a card:"), "P1 should be drawing a card");
     }
 
+    @Test
+    @DisplayName("RESP_34_test_01: Test playing of quest with no eligible participants(all players withdraw)")
+    void RESP_34_test_01() {
+        main.setCurrentPlayerIndex(0);
+        QuestCard q2 = new QuestCard("Q2", 2); // 2 stages
+        int sponsorIndex = 0; // P1 is the sponsor
+        List<List<Card>> questCards = new ArrayList<>();
+
+        questCards.add(Arrays.asList(new FoeCard("F5", 5), new WeaponCard("S10", 10)));
+        questCards.add(Arrays.asList(new FoeCard("F10", 10), new WeaponCard("S10", 10)));
+        questCards.add(Arrays.asList(new FoeCard("F15", 15), new WeaponCard("S10", 10)));
+
+        String input = "withdraw\nwithdraw\nwithdraw\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.playQuest(q2, sponsorIndex, questCards, scanner);
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(output.contains("[Game] No participants left for stage 1"),
+                "Game should output no participants for the stage");
+    }
+
+    @Test
+    @DisplayName("RESP_34_test_02: Test playing quest when one player submits no cards and loses the stage")
+    void RESP_34_test_02() {
+        main.setCurrentPlayerIndex(0);
+        QuestCard q2 = new QuestCard("Q2", 2); // 2 stages
+        int sponsorIndex = 0; // P1 is the sponsor
+        List<List<Card>> questCards = new ArrayList<>();
+
+        questCards.add(Arrays.asList(new FoeCard("F5", 5), new WeaponCard("S10", 10)));
+        questCards.add(Arrays.asList(new FoeCard("F10", 10), new WeaponCard("S10", 10)));
+        questCards.add(Arrays.asList(new FoeCard("F15", 15), new WeaponCard("S10", 10)));
+
+        String input = "play\nwithdraw\nwithdraw\nquit\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        main.playQuest(q2, sponsorIndex, questCards, scanner);
+
+        String output = outputStream.toString();
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+        System.out.println(output);
+        assertTrue(
+                output.contains("[Game] P2 loses this stage and is ineligible to further participate in this quest."),
+                "P2 should lose the stage");
+        assertTrue(output.contains("[Game] No participants won stage 1."),
+                "Game should output no participants won the stage");
+    }
+
 }
