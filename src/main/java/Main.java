@@ -47,6 +47,8 @@ public class Main {
         eventDeck.addMultipleCards(new EventCard("Prosperity"), 2); // 2 Prosperity cards
 
         // Shuffle the decks
+        adventureDeck.shuffle();
+        eventDeck.shuffle();
 
         System.out.println("[Game] Adventure and Event Deck has been setup!");
     }
