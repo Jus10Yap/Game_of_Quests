@@ -4,21 +4,34 @@ import java.util.*;
 
 public class Main {
     // Variables
+    public static Main instance;
     private Deck adventureDeck;
     private Deck eventDeck;
     private List<Player> players;
     private final int NUM_PLAYERS = 4;
     private int currentPlayerIndex;
     private boolean ongoing;
+    private Card currentDrawnCard;
+    private int sponsorIndex;
 
     public Main() {
         adventureDeck = new Deck(100);
         eventDeck = new Deck(17);
+        currentDrawnCard = null;
         setupDecks();
         setupPlayers();
         currentPlayerIndex = -1;
         ongoing = true;
+        sponsorIndex = -1;
     }
+
+    public static Main getInstance() {
+        if (instance == null) {
+            instance = new Main();
+        }
+        return instance;
+    }
+
     // Functions
     public void setupDecks() {
         // Add Foe cards
@@ -273,6 +286,7 @@ public class Main {
 
                 if (response.equals("y")) {
                     System.out.println("[Game] " + player.getName() + " is sponsoring the quest!");
+                    this.sponsorIndex = (index + i) % NUM_PLAYERS;
                     return (index + i) % NUM_PLAYERS; // Return the index of the player who said yes
                 } else if (response.equals("n")) {
                     System.out.println("[Game] " + player.getName() + " has chosen not to sponsor the quest.");
@@ -748,6 +762,8 @@ public class Main {
             System.out.println("[Game] " + sponsor.getName() + " has more than 12 cards and needs to trim their hand.");
             trimHand(sponsor, scanner);
         }
+
+        this.sponsorIndex = -1;
     }
 
     public void playQuest(QuestCard questCard, int sponsorIndex, List<List<Card>> questCards, Scanner scanner) {
@@ -851,21 +867,22 @@ public class Main {
         players.get(currentPlayerIndex).displayHand();
 
         // The game ‘draws’ (i.e., displays) the next event card
-        Card drawnCard = eventDeck.drawCard();
+        currentDrawnCard = eventDeck.drawCard();
 
         // Handle Event or Quest Card
-        if (drawnCard instanceof EventCard) {
+        if (currentDrawnCard instanceof EventCard) {
             Scanner scanner = new Scanner(System.in);
-            handleEventCard((EventCard) drawnCard, scanner);
-        } else if (drawnCard instanceof QuestCard) {
+            handleEventCard((EventCard) currentDrawnCard, scanner);
+        } else if (currentDrawnCard instanceof QuestCard) {
             Scanner scanner = new Scanner(System.in);
-            handleQuestCard((QuestCard) drawnCard, scanner);
+            handleQuestCard((QuestCard) currentDrawnCard, scanner);
         } else {
             System.out.println("\n[WARNING] Incorrect card found in event deck!!!\n");
         }
 
         // Put drawn card on discard pile
-        eventDeck.discardCard(drawnCard);
+        eventDeck.discardCard(currentDrawnCard);
+        currentDrawnCard = null;
 
         // Check for winners at the end of the round
         checkForWinners();
@@ -911,9 +928,25 @@ public class Main {
         return (currentPlayerIndex + 1) % NUM_PLAYERS;
     }
 
+    public Card getCurrentDrawnCard() {
+        return currentDrawnCard;
+    }
+
+    public int getSponsorIndex(){
+        return sponsorIndex;
+    }
+
     // Setters
     public void setCurrentPlayerIndex(int index) {
         currentPlayerIndex = index;
+    }
+
+    public void setCurrentDrawnCard(Card card) {
+        currentDrawnCard = card;
+    }
+
+    public void setSponsorIndex(int index) {
+        sponsorIndex = index;
     }
 
     public static void main(String[] args) {
