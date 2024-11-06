@@ -22,6 +22,26 @@ public class Deck {
         cards.add(card);
     }
 
+    // Moves card to the top of the deck if it exists
+    public void moveCardToTop(String cardName) {
+        Card cardToMove = null;
+        for (Card card : cards) {
+            if (card.getName().equals(cardName)) {
+                cardToMove = card;
+                break;
+            }
+        }
+
+        if (cardToMove != null) {
+            cards.remove(cardToMove);
+            cards.add(0, cardToMove);
+        } else {
+            System.out.println("Card " + cardName + " not found in the deck.");
+        }
+    }
+
+
+
     // Adds multiple cards to the deck
     public void addMultipleCards(Card card, int count) {
         for (int i = 0; i < count; i++) {
