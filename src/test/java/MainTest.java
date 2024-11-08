@@ -1237,7 +1237,7 @@ class MainTest {
         List<Card> updatedStageCards = main.addCardToStage(input, 0, stageCards, scanner); // Pass the scanner instance
 
         assertEquals(1, updatedStageCards.size(), "Stage should contain one card.");
-        assertTrue(updatedStageCards.get(0) instanceof WeaponCard, "The added card should be a WeaponCard.");
+        assertTrue(updatedStageCards.get(0) instanceof FoeCard, "The added card should be a FoeCard.");
     }
 
     @Test
@@ -1341,13 +1341,10 @@ class MainTest {
 
         boolean result = main.handleQuit(stageCards, currentStageValue, prevStageValue, 1);
 
-        assertFalse(result, "The result should be false.");
+        assertTrue(result, "The result should be true.");
         String output = outputStream.toString();
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
         System.out.println(output);
-
-        assertTrue(output.contains("[Game] You must include at least one unique weapon card in the stage."),
-                "Stage should be invalid");
     }
 
     @Test
@@ -1443,6 +1440,7 @@ class MainTest {
     @DisplayName("RESP_23_test_01: Test successful quest setup with multiple stages")
     void RESP_23_test_01() {
         QuestCard questCard = new QuestCard("Q2", 2); // Quest with 2 stages
+        main.setCurrentDrawnCard(questCard);
         Player sponsor = players.get(0); // P1
         sponsor.addCardToHand(new FoeCard("F5", 5));
         sponsor.addCardToHand(new WeaponCard("S10", 10));
@@ -1506,10 +1504,10 @@ class MainTest {
     @Test
     @DisplayName("RESP_24_test_02: Test only winners of the previous stage are eligible for the next stage")
     void RESP_24_test_02() {
-        List<Player> previousWinners = new ArrayList<>();
+        List<Player> previousWinners = main.getPreviousWinners();
         previousWinners.add(players.get(2)); // P3 wins first stage
 
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
 
         List<Player> eligibleParticipants = main.getEligibleParticipants(0, players, previousWinners, withdrawnPlayers,
                 2); // Stage 2
@@ -1521,10 +1519,10 @@ class MainTest {
     @Test
     @DisplayName("RESP_24_test_03: Test a player who withdrew cannot participate in the next stage")
     void RESP_24_test_03() {
-        List<Player> previousWinners = new ArrayList<>();
+        List<Player> previousWinners = main.getPreviousWinners();
         previousWinners.add(players.get(1)); // P2 wins first stage
 
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
         withdrawnPlayers.add(players.get(2)); // P3 withdrew
 
         List<Player> eligibleParticipants = main.getEligibleParticipants(0, players, previousWinners, withdrawnPlayers,
@@ -1539,11 +1537,11 @@ class MainTest {
     @Test
     @DisplayName("RESP_24_test_04: Test displaying eligible participants")
     void RESP_24_test_04() {
-        List<Player> previousWinners = new ArrayList<>();
+        List<Player> previousWinners = main.getPreviousWinners();
         previousWinners.add(players.get(1)); // P2 wins first stage
         previousWinners.add(players.get(2)); // P3 wins first stage
 
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1565,8 +1563,11 @@ class MainTest {
     @DisplayName("RESP_25_test_01: Test player participates when input is 'Play'")
     void RESP_25_test_01() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1)); // P1 and P2 are eligible
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1588,8 +1589,11 @@ class MainTest {
     @DisplayName("RESP_25_test_02: Test player withdraws when input is 'Withdraw'")
     void RESP_25_test_02() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1)); // P1 and P2 are eligible
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1613,9 +1617,11 @@ class MainTest {
     @DisplayName("RESP_25_test_03: Test player is prompted again for invalid input")
     void RESP_25_test_03() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1)); // P1 and P2 are eligible
-
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
@@ -1639,10 +1645,12 @@ class MainTest {
     @DisplayName("RESP_25_test_04: Test withdrawn players are skipped")
     void RESP_25_test_04() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1), players.get(2)); // P1, P2,
-        // and P3 are
-        // eligible
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 and P3 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
+        eligibleParticipants.add(players.get(2));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1669,10 +1677,12 @@ class MainTest {
     @DisplayName("RESP_25_test_05: Test all players withdraw")
     void RESP_25_test_05() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1), players.get(2)); // P1, P2,
-        // and P3 are
-        // eligible
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 and P3 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
+        eligibleParticipants.add(players.get(2));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1697,8 +1707,10 @@ class MainTest {
     @DisplayName("RESP_25_test_06: Test multiple invalid inputs before valid response")
     void RESP_25_test_06() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0)); // P1 is eligible
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 is eligible
+        eligibleParticipants.add(players.get(0));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1723,10 +1735,12 @@ class MainTest {
     @DisplayName("RESP_25_test_07: Test mixed responses from players")
     void RESP_25_test_07() {
         main.setCurrentPlayerIndex(0);
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(1), players.get(2)); // P1, P2,
-        // and P3 are
-        // eligible
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 and P3 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
+        eligibleParticipants.add(players.get(2));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1754,7 +1768,11 @@ class MainTest {
     void RESP_25_test_08() {
         main.setCurrentPlayerIndex(2); // P3
         Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants = Arrays.asList(players.get(0), players.get(2), players.get(1)); // P1, P3, P2
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 and P2 and P3 are eligible
+        eligibleParticipants.add(players.get(0));
+        eligibleParticipants.add(players.get(1));
+        eligibleParticipants.add(players.get(2));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -1762,7 +1780,8 @@ class MainTest {
         String input = "play\nwithdraw\nplay\n"; // P3 chooses to play, P1 withdraws, and P2 plays
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
-        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        List<Player> participants = main.getParticipants();
 
         String output = outputStream.toString();
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
@@ -1783,8 +1802,11 @@ class MainTest {
     void RESP_26_test_01() {
         main.setCurrentPlayerIndex(0);
         Player p1 = players.get(0);
-        List<Player> eligibleParticipants = Arrays.asList(p1); // P1 is eligible
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 is eligible
+        eligibleParticipants.add(p1);
+
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
 
         List<Card> hand = main.getAdventureDeck().drawMultipleCards(11); // Give P1 11 cards
         p1.setHand(hand);
@@ -1795,7 +1817,8 @@ class MainTest {
         String input = "play\n"; // P1 chooses to play
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
-        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        List<Player> participants = main.getParticipants();
         assertEquals(1, participants.size(), "P1 should choose to participate.");
 
         main.handleParticipation(p1, scanner);
@@ -1813,8 +1836,10 @@ class MainTest {
     void RESP_26_test_02() {
         main.setCurrentPlayerIndex(0);
         Player p1 = players.get(0);
-        List<Player> eligibleParticipants = Arrays.asList(p1); // P1 is eligible
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 is eligible
+        eligibleParticipants.add(p1);
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
 
         List<Card> hand = main.getAdventureDeck().drawMultipleCards(12); // Give P1 12 cards
         p1.setHand(hand);
@@ -1825,7 +1850,8 @@ class MainTest {
         String input = "play\n0\n1"; // P1 chooses to play
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
-        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        List<Player> participants = main.getParticipants();
         assertEquals(1, participants.size(), "P1 should choose to participate.");
 
         main.handleParticipation(p1, scanner);
@@ -1845,8 +1871,10 @@ class MainTest {
     void RESP_26_test_03() {
         main.setCurrentPlayerIndex(0);
         Player p1 = players.get(0);
-        List<Player> eligibleParticipants = Arrays.asList(p1); // P1 is eligible
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> eligibleParticipants = main.getEligibleParticipants();
+        // P1 is eligible
+        eligibleParticipants.add(p1);
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
 
         List<Card> hand = main.getAdventureDeck().drawMultipleCards(10); // Give P1 10 cards
         p1.setHand(hand);
@@ -1857,7 +1885,8 @@ class MainTest {
         String input = "play\n"; // P1 chooses to play
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
-        List<Player> participants = main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        main.promptForParticipation(eligibleParticipants, withdrawnPlayers, scanner);
+        List<Player> participants = main.getParticipants();
         assertEquals(1, participants.size(), "P1 should choose to participate.");
 
         main.handleParticipation(p1, scanner);
@@ -2584,7 +2613,8 @@ class MainTest {
         QuestCard questCard = new QuestCard("Q4", 4);
 
         // P1 is asked but declines to sponsor
-        int sponsorIndex = main.promptForSponsorship(questCard, scanner);
+        main.promptForSponsorship(questCard, scanner);
+        int sponsorIndex = main.getSponsorIndex();
 
         // P2 is asked and sponsors and then builds the 4 stages of the quest as posted
         List<List<Card>> questCards = main.buildQuest(sponsorIndex, questCard, scanner);
@@ -2592,8 +2622,8 @@ class MainTest {
         // questCards = [F5,H10], [F15,S10], [F15,D5, B15], [F40,B15]
         // P2's Hand: F5, H10, E30
 
-        List<Player> previousWinners = new ArrayList<>();
-        Set<Player> withdrawnPlayers = new HashSet<>();
+        List<Player> previousWinners = main.getPreviousWinners();
+        Set<Player> withdrawnPlayers = main.getWithdrawnPlayers();
         List<Player> eligibleParticipants;
         int stageNumber = 1;
         int index = main.getCurrentPlayerIndex();
@@ -2794,6 +2824,7 @@ class MainTest {
         main.endQuest(sponsorIndex, questCards, questCard.getStages(), scanner);
 
         // assert P2 has 12 cards in hand
+        assertEquals(p2.getHand().size(),12);
         String output = outputStream.toString();
         System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
         System.out.println(output);

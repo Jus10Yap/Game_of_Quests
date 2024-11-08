@@ -86,6 +86,7 @@ public class Player {
     }
 
     public List<Card> getHand() {
+        sortHand();
         return hand;
     }
 

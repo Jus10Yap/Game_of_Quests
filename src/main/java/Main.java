@@ -13,6 +13,13 @@ public class Main {
     private boolean ongoing;
     private Card currentDrawnCard;
     private int sponsorIndex;
+    List<List<Card>> questStages;
+    List<Player> previousWinners;
+    Set<Player> withdrawnPlayers;
+    List<Player> eligibleParticipants;
+    List<Player> participants;
+    List<List<Card>> attackingCards;
+    List<Integer> attackIndices;
 
     public Main() {
         adventureDeck = new Deck(100);
@@ -23,6 +30,13 @@ public class Main {
         currentPlayerIndex = -1;
         ongoing = true;
         sponsorIndex = -1;
+        questStages = new ArrayList<>();
+        previousWinners = new ArrayList<>();
+        withdrawnPlayers = new HashSet<>();
+        eligibleParticipants = new ArrayList<>();
+        participants = new ArrayList<>();
+        attackingCards = new ArrayList<>();
+        attackIndices = new ArrayList<>();
     }
 
     public static Main getInstance() {
@@ -126,7 +140,6 @@ public class Main {
     public void handleEventCard(EventCard card, Scanner scanner) {
         String eventType = card.getName();
         Player currentPlayer = players.get(currentPlayerIndex);
-        System.out.println("\n[Game] " + currentPlayer.getName() + " has drawn the " + eventType + " card!");
 
         switch (eventType) {
             case "Plague" -> {
@@ -152,11 +165,7 @@ public class Main {
                 currentPlayer.displayHand();
 
                 // Check if the player needs to trim their hand
-                if (currentPlayer.getHand().size() > 12) {
-                    System.out.println("[Game] " + currentPlayer.getName()
-                            + " has more than 12 cards, starting hand trimming process!");
-                    trimHand(currentPlayer, scanner);
-                }
+                trimPlayerHand(currentPlayer, scanner);
             }
             case "Prosperity" -> {
                 System.out.println("\n[Game] All players will draw 2 adventure cards!");
@@ -172,11 +181,7 @@ public class Main {
                     }
 
                     // Check if the player needs to trim their hand
-                    if (player.getHand().size() > 12) {
-                        System.out.println("[Game] " + player.getName()
-                                + " has more than 12 cards, starting hand trimming process.");
-                        trimHand(player, scanner);
-                    }
+                    trimPlayerHand(player, scanner);
                 }
             }
         }
@@ -281,23 +286,30 @@ public class Main {
         for (int i = 0; i < NUM_PLAYERS; i++) {
             Player player = players.get((index + i) % NUM_PLAYERS);
             if (isValidSponsor(player, questCard.getStages())) {
-                String message = "[Game] " + player.getName() + ", do you want to sponsor the current quest? (y/n)";
-                String response = promptForInput(scanner, player, message).toLowerCase();
-
-                if (response.equals("y")) {
-                    System.out.println("[Game] " + player.getName() + " is sponsoring the quest!");
+                if (askPlayerToSponsor(player, scanner)) {
                     this.sponsorIndex = (index + i) % NUM_PLAYERS;
-                    return (index + i) % NUM_PLAYERS; // Return the index of the player who said yes
-                } else if (response.equals("n")) {
-                    System.out.println("[Game] " + player.getName() + " has chosen not to sponsor the quest.");
-                } else {
-                    System.out.println("[Game] Invalid input. Please enter 'y' or 'n'.");
-                    i--;
+                    return (index + i) % NUM_PLAYERS;
                 }
             }
         }
         System.out.println("[Game] No player has chosen to sponsor the quest."); // All players said no
         return -1;
+    }
+
+    public boolean askPlayerToSponsor(Player player, Scanner scanner) {
+        String message = "[Game] " + player.getName() + ", do you want to sponsor the current quest? (y/n)";
+        String response = promptForInput(scanner, player, message).toLowerCase();
+
+        if (response.equals("y")) {
+            System.out.println("[Game] " + player.getName() + " is sponsoring the quest!");
+            return true; // Return the index of the player who said yes
+        } else if (response.equals("n")) {
+            System.out.println("[Game] " + player.getName() + " has chosen not to sponsor the quest.");
+            return false;
+        } else {
+            System.out.println("[Game] Invalid input. Please enter 'y' or 'n'.");
+            return askPlayerToSponsor(player, scanner);
+        }
     }
 
     public boolean isValidCardPosition(String input, int index) {
@@ -412,10 +424,11 @@ public class Main {
             if (!hasFoeCard) {
                 System.out.println("[Game] You must include one foe card in the stage.");
                 return false;
-            } else if (weaponNames.isEmpty()) {
-                System.out.println("[Game] You must include at least one unique weapon card in the stage.");
-                return false;
             }
+//            else if (weaponNames.isEmpty()) {
+//                System.out.println("[Game] You must include at least one unique weapon card in the stage.");
+//                return false;
+//            }
             // Stage is valid
             System.out.println("[Game] Stage " + stageNumber + " complete. Cards used in this stage:");
             for (Card card : stageCards) {
@@ -474,31 +487,50 @@ public class Main {
         return stageCards;
     }
 
+    public List<Card> setupStage(int sponsorIndex, int prevStageValue, int stageNumber, Scanner scanner) {
+        return buildStage(sponsorIndex, prevStageValue, stageNumber, scanner); // Reuses the existing `buildStage` method
+    }
+
+    public boolean confirmStageSetup(List<Card> stage) {
+        return !stage.isEmpty();
+    }
+
+    public void addStageCardsOntoQuest(List<Card> stage){
+        questStages.add(stage);
+    }
+
+    public void printQuestSetupComplete(){
+        if(currentDrawnCard instanceof QuestCard){
+            if(questStages.size() == ((QuestCard) currentDrawnCard).getStages()){
+                System.out.println("[Game] Quest setup is complete! All stages have been successfully configured.");
+            }
+        }
+    }
+
     public List<List<Card>> buildQuest(int sponsorIndex, QuestCard questCard, Scanner scanner) {
-        List<List<Card>> questStages = new ArrayList<>(); // List of stages, each containing a list of cards
+        questStages = new ArrayList<>(); // List of stages, each containing a list of cards
         int numStages = questCard.getStages(); // Number of stages in the quest
         int prevStageValue = 0;
 
         for (int i = 1; i <= numStages; i++) {
             System.out.println("[Game] Setting up stage " + i + " of " + numStages + ".");
+            List<Card> stage = setupStage(sponsorIndex, prevStageValue, i, scanner);
 
-            List<Card> stage = buildStage(sponsorIndex, prevStageValue, i, scanner);
-
-            if (stage.isEmpty()) {
+            if (!confirmStageSetup(stage)) {
                 System.out.println("[Game] Stage setup was incomplete or failed.");
-                return null; // Quest setup failed
+                return null;
             }
 
-            questStages.add(stage);
+            addStageCardsOntoQuest(stage);
             prevStageValue = calculateStageValue(stage); // Update the value of the previous stage
         }
 
-        System.out.println("[Game] Quest setup is complete! All stages have been successfully configured.");
+        printQuestSetupComplete();
         return questStages;
     }
 
     public List<Player> getEligibleParticipants(int sponsorIndex, List<Player> players, List<Player> previousWinners, Set<Player> withdrawnPlayers, int stageNumber) {
-        List<Player> eligibleParticipants = new ArrayList<>();
+        eligibleParticipants = new ArrayList<>();
 
         if (stageNumber == 1) {
             // At the first stage, all players except the sponsor are eligible
@@ -531,50 +563,53 @@ public class Main {
         }
     }
 
+    public void askPlayerToParticipate(Player player, Scanner scanner) {
+        if (eligibleParticipants.contains(player) && !withdrawnPlayers.contains(player)) {
+            String input = promptForInput(scanner, player, "[Game] " + player.getName() + ", do you want to 'Play' or 'Withdraw'?").toLowerCase();
+
+            if (input.equals("withdraw")) {
+                withdrawnPlayers.add(player);
+                System.out.println("[Game] " + player.getName() + " has withdrawn from the quest.");
+            } else if (input.equalsIgnoreCase("play")) {
+                participants.add(player);
+                System.out.println("[Game] " + player.getName() + " will participate in the stage.");
+            } else {
+                System.out.println("[Game] Invalid input. Please enter 'play' or 'withdraw'.");
+                askPlayerToParticipate(player, scanner); // Recursive call to retry if input is invalid
+            }
+        }
+    }
+
     public List<Player> promptForParticipation(List<Player> eligibleParticipants, Set<Player> withdrawnPlayers, Scanner scanner) {
         int index = getCurrentPlayerIndex();
-
-        List<Player> participants = new ArrayList<>();
-
+        participants = new ArrayList<>();
         for (int i = 0; i < NUM_PLAYERS; i++) {
             Player player = players.get((index + i) % NUM_PLAYERS);
 
-            if (eligibleParticipants.contains(player) && !withdrawnPlayers.contains(player)) {
+                askPlayerToParticipate(player, scanner);
 
-                String input;
-                boolean validInput = false; // Flag to track valid input
-
-                while (!validInput) {
-                    String message = "[Game] " + player.getName() + ", do you want to 'Play' or 'Withdraw'?";
-                    input = promptForInput(scanner, player, message).toLowerCase();
-
-                    if (input.equals("withdraw")) {
-                        withdrawnPlayers.add(player);
-                        System.out.println("[Game] " + player.getName() + " has withdrawn from the quest.");
-                        validInput = true;
-                    } else if (input.equalsIgnoreCase("play")) {
-                        participants.add(player);
-                        System.out.println("[Game] " + player.getName() + " will participate in the stage.");
-                        validInput = true;
-                    } else {
-                        System.out.println("[Game] Invalid input. Please enter 'play' or 'withdraw'.");
-                    }
-                }
-            }
         }
-
         return participants; // Return the list of players who chose to play
     }
 
-    public void handleParticipation(Player player, Scanner scanner) {
-        Card drawnCard = adventureDeck.drawCard();
-        player.addCardToHand(drawnCard);
-        System.out.println("[Game] " + player.getName() + " draws a card: " + drawnCard.getName());
-
+    public void trimPlayerHand(Player player, Scanner scanner){
         if (player.getHand().size() > 12) {
             System.out.println("[Game] " + player.getName() + " has more than 12 cards and needs to trim their hand.");
             trimHand(player, scanner);
         }
+    }
+
+    public void participantDrawsCard(Player player){
+        if (participants.contains(player)) {
+            Card drawnCard = adventureDeck.drawCard();
+            player.addCardToHand(drawnCard);
+            System.out.println("[Game] " + player.getName() + " draws a card: " + drawnCard.getName());
+        }
+    }
+
+    public void handleParticipation(Player player, Scanner scanner) {
+        participantDrawsCard(player);
+        trimPlayerHand(player, scanner);
     }
 
     public boolean isValidCardForAttack(Card card, List<Card> attackCards) {
@@ -721,6 +756,7 @@ public class Main {
             }
         }
         attackingCards.clear();
+        attackIndices.clear();
     }
 
     public void resolveQuest(List<Player> previousWinners, int numStages) {
@@ -758,18 +794,22 @@ public class Main {
         }
 
         // Check if the sponsor's hand exceeds 12 cards and trim if necessary
-        if (sponsor.getHand().size() > 12) {
-            System.out.println("[Game] " + sponsor.getName() + " has more than 12 cards and needs to trim their hand.");
-            trimHand(sponsor, scanner);
-        }
+        trimPlayerHand(sponsor, scanner);
 
         this.sponsorIndex = -1;
     }
 
+    public void askParticipantToSetupAttack(Player participant, Scanner scanner, int index){
+        if (participants.contains(participant) && !attackIndices.contains(index)) {
+            List<Card> attackCards = setupAttack(index, scanner); // Player sets up attack
+            attackingCards.add(attackCards);
+            attackIndices.add(index);
+        }
+    }
+
     public void playQuest(QuestCard questCard, int sponsorIndex, List<List<Card>> questCards, Scanner scanner) {
-        List<Player> previousWinners = new ArrayList<>();
-        Set<Player> withdrawnPlayers = new HashSet<>();
-        List<Player> eligibleParticipants;
+        previousWinners = new ArrayList<>();
+        withdrawnPlayers = new HashSet<>();
         int stageNumber;
         int index = currentPlayerIndex;
 
@@ -801,17 +841,13 @@ public class Main {
             }
 
             System.out.println("[Game] Playing stage " + stageNumber);
-            List<List<Card>> attackingCards = new ArrayList<>();
-            List<Integer> attackIndices = new ArrayList<>();
+            attackingCards = new ArrayList<>();
+            attackIndices = new ArrayList<>();
 
             // Each participant for the current stage in turn sets up a valid attack
             for (int i = 0; i <= NUM_PLAYERS; i++) {
                 Player participant = players.get((index + i) % NUM_PLAYERS);
-                if (participants.contains(participant) && !attackIndices.contains((index + i) % NUM_PLAYERS)) {
-                    List<Card> attackCards = setupAttack((index + i) % NUM_PLAYERS, scanner); // Player sets up attack
-                    attackingCards.add(attackCards);
-                    attackIndices.add((index + i) % NUM_PLAYERS);
-                }
+                askParticipantToSetupAttack(participant,scanner,(index + i) % NUM_PLAYERS);
             }
 
             // Game resolves the attack(s) against the current stage
@@ -841,35 +877,31 @@ public class Main {
     }
 
     public void handleQuestCard(QuestCard questCard, Scanner scanner) {
-        Player currentPlayer = players.get(currentPlayerIndex);
-        System.out.println("[Game] " + currentPlayer.getName() + " has drawn the " + questCard.getName() + " card!");
+        if (questCard.getName().equals(currentDrawnCard.getName())){
+            sponsorIndex = promptForSponsorship(questCard, scanner);
+            if (sponsorIndex != -1) {
+                System.out.println("[Game] Sponsor is: " + players.get(sponsorIndex).getName());
+                List<List<Card>> questCards = buildQuest(sponsorIndex, questCard, scanner);
 
-        int sponsorIndex = promptForSponsorship(questCard, scanner);
-        if (sponsorIndex != -1) {
-            System.out.println("[Game] Sponsor is: " + players.get(sponsorIndex).getName());
-            List<List<Card>> questCards = buildQuest(sponsorIndex, questCard, scanner);
+                // play the quest
+                playQuest(questCard, sponsorIndex, questCards, scanner);
+            } else {
+                System.out.println("[Game] All players have declined to sponsor the quest. The quest card is discarded.");
+            }
+    }}
 
-            // play the quest
-            playQuest(questCard, sponsorIndex, questCards, scanner);
-        } else {
-            System.out.println("[Game] All players have declined to sponsor the quest. The quest card is discarded.");
-        }
+    public void drawCard(){
+        currentDrawnCard = eventDeck.drawCard();
+        System.out.println("\n[Game] " + players.get(currentPlayerIndex).getName() + " has drawn the " + currentDrawnCard.getName() + " card!");
     }
 
-    public void playRound() {
-        // Player takes their turn
-        changeCurrentPlayer();
+    private void discardDrawnCard() {
+        eventDeck.discardCard(currentDrawnCard);
+        currentDrawnCard = null;
+    }
 
-        // Indicate whose turn it is
-        System.out.println("\n[Game] Hello " + players.get(currentPlayerIndex).getName() + "! Here is your current hand:");
-
-        // Display current player hand in sorted order
-        players.get(currentPlayerIndex).displayHand();
-
-        // The game ‘draws’ (i.e., displays) the next event card
-        currentDrawnCard = eventDeck.drawCard();
-
-        // Handle Event or Quest Card
+    // Handle the next event or quest card
+    public void handleDrawnCard() {
         if (currentDrawnCard instanceof EventCard) {
             Scanner scanner = new Scanner(System.in);
             handleEventCard((EventCard) currentDrawnCard, scanner);
@@ -879,10 +911,29 @@ public class Main {
         } else {
             System.out.println("\n[WARNING] Incorrect card found in event deck!!!\n");
         }
+    }
+
+    public void greetCurrentPlayer(){
+        System.out.println("\n[Game] Hello " + players.get(currentPlayerIndex).getName() + "! Here is your current hand:");
+        players.get(currentPlayerIndex).displayHand();
+    }
+
+    public void playRound() {
+        // Player takes their turn
+        changeCurrentPlayer();
+
+        // Indicate whose turn it is
+        // Display current player hand in sorted order
+        greetCurrentPlayer();
+
+        // The game ‘draws’ (i.e., displays) the next event card
+        drawCard();
+
+        // Handle Event or Quest Card
+        handleDrawnCard();
 
         // Put drawn card on discard pile
-        eventDeck.discardCard(currentDrawnCard);
-        currentDrawnCard = null;
+        discardDrawnCard();
 
         // Check for winners at the end of the round
         checkForWinners();
@@ -934,6 +985,34 @@ public class Main {
 
     public int getSponsorIndex(){
         return sponsorIndex;
+    }
+
+    public Set<Player> getWithdrawnPlayers(){
+        return withdrawnPlayers;
+    }
+
+    public List<Player> getPreviousWinners(){
+        return previousWinners;
+    }
+
+    public List<Player> getParticipants(){
+        return participants;
+    }
+
+    public List<Player> getEligibleParticipants(){
+        return eligibleParticipants;
+    }
+
+    public List<List<Card>> getQuestStages() {
+        return questStages;
+    }
+
+    public List<List<Card>> getAttackingCards(){
+        return attackingCards;
+    }
+
+    public List<Integer> getAttackIndices(){
+        return attackIndices;
     }
 
     // Setters
