@@ -746,6 +746,8 @@ public class Main {
                 withdrawnPlayers.add(participant);
             }
         }
+
+
     }
 
     public void discardAttackCards(List<List<Card>> attackingCards) {
