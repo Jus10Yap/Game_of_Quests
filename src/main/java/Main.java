@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Main {
     // Variables
-    public static Main instance;
     private Deck adventureDeck;
     private Deck eventDeck;
     private List<Player> players;
@@ -38,14 +37,6 @@ public class Main {
         attackingCards = new ArrayList<>();
         attackIndices = new ArrayList<>();
     }
-
-    public static Main getInstance() {
-        if (instance == null) {
-            instance = new Main();
-        }
-        return instance;
-    }
-
     // Functions
     public void setupDecks() {
         // Add Foe cards
@@ -115,13 +106,14 @@ public class Main {
         }
     }
 
-    public void checkForWinners() {
+    public List<String> checkForWinners() {
         List<Player> winners = new ArrayList<>();
-
+        List<String> winnerNames = new ArrayList<>();
         // Check if any player has won
         for (Player player : players) {
             if (player.hasWon()) {
                 winners.add(player); // Add all players with 7 or more shields to the winners list
+                winnerNames.add(player.getName());
             }
         }
 
@@ -134,6 +126,7 @@ public class Main {
             System.out.println("\n[Game] The game has ended! GG!");
             ongoing = false; // Stop the game
         }
+        return winnerNames;
     }
 
     // Handle the event card and pass the Scanner object
@@ -761,9 +754,15 @@ public class Main {
         attackIndices.clear();
     }
 
+    public void resolveQuestPerPlayer(Player player, int numStages){
+        if(previousWinners.contains(player)){
+            player.addShields(numStages);
+        }
+    }
+
     public void resolveQuest(List<Player> previousWinners, int numStages) {
         for (Player winner : previousWinners) {
-            winner.addShields(numStages);
+            resolveQuestPerPlayer(winner,numStages);
         }
     }
 
@@ -780,6 +779,8 @@ public class Main {
                 discardedCards++;
             }
         }
+
+        questCards.clear();
 
         // Draws the same number of cards + the number of stages, and then possibly
         // trims their hand
@@ -897,7 +898,7 @@ public class Main {
         System.out.println("\n[Game] " + players.get(currentPlayerIndex).getName() + " has drawn the " + currentDrawnCard.getName() + " card!");
     }
 
-    private void discardDrawnCard() {
+    public void discardDrawnCard() {
         eventDeck.discardCard(currentDrawnCard);
         currentDrawnCard = null;
     }

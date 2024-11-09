@@ -2285,7 +2285,7 @@ class MainTest {
         Player p1 = players.get(0);
         Player p2 = players.get(1);
         Player p4 = players.get(3);
-        List<Player> previousWinners = new ArrayList<>();
+        List<Player> previousWinners = main.getPreviousWinners();
         previousWinners.add(p1);
         previousWinners.add(p2);
         previousWinners.add(p4);
@@ -2308,7 +2308,7 @@ class MainTest {
         Player p1 = players.get(0);
         Player p2 = players.get(1);
         Player p4 = players.get(3);
-        List<Player> previousWinners = new ArrayList<>();
+        List<Player> previousWinners = main.getPreviousWinners();
         previousWinners.add(p1);
         p1.addShields(2);
         previousWinners.add(p2);
@@ -2330,7 +2330,7 @@ class MainTest {
     @Test
     @DisplayName("RESP_32_test_03: Test no winners")
     void RESP_32_test_03() {
-        List<Player> previousWinners = new ArrayList<>(); // No winners
+        List<Player> previousWinners = main.getPreviousWinners(); // No winners
 
         Player p1 = players.get(0);
         Player p2 = players.get(1);
