@@ -129,6 +129,21 @@ public class Main {
         return winnerNames;
     }
 
+    public void playerDrawsTwoCards(Player player, Scanner scanner){
+        System.out.println("\n[Game] " + player.getName() + " draws 2 adventure cards!");
+
+        // Draw 2 adventure cards
+        for (int i = 0; i < 2; i++) {
+           playerDrawsCard(player);
+        }
+
+        // Display player's hand after drawing
+        player.displayHand();
+
+        // Check if the player needs to trim their hand
+        trimPlayerHand(player, scanner);
+    }
+
     // Handle the event card and pass the Scanner object
     public void handleEventCard(EventCard card, Scanner scanner) {
         String eventType = card.getName();
@@ -146,19 +161,7 @@ public class Main {
                         "[Game] " + currentPlayer.getName() + " now has " + currentPlayer.getShields() + " shields.");
             }
             case "Queen's Favor" -> {
-                System.out.println("\n[Game] " + currentPlayer.getName() + " draws 2 adventure cards!");
-
-                // Draw 2 adventure cards
-                for (int i = 0; i < 2; i++) {
-                    Card drawnCard = adventureDeck.drawCard();
-                    currentPlayer.addCardToHand(drawnCard);
-                }
-
-                // Display player's hand after drawing
-                currentPlayer.displayHand();
-
-                // Check if the player needs to trim their hand
-                trimPlayerHand(currentPlayer, scanner);
+                playerDrawsTwoCards(currentPlayer, scanner);
             }
             case "Prosperity" -> {
                 System.out.println("\n[Game] All players will draw 2 adventure cards!");
@@ -166,15 +169,7 @@ public class Main {
                 int index = this.currentPlayerIndex;
                 for (int i = 0; i < NUM_PLAYERS; i++) {
                     Player player = players.get((index + i) % NUM_PLAYERS);
-
-                    System.out.println("[Game] " + player.getName() + " draws 2 adventure cards!");
-                    for (int j = 0; j < 2; j++) {
-                        Card drawnCard = adventureDeck.drawCard();
-                        player.addCardToHand(drawnCard);
-                    }
-
-                    // Check if the player needs to trim their hand
-                    trimPlayerHand(player, scanner);
+                    playerDrawsTwoCards(player, scanner);
                 }
             }
         }
@@ -592,11 +587,15 @@ public class Main {
         }
     }
 
+    public void playerDrawsCard(Player player){
+        Card drawnCard = adventureDeck.drawCard();
+        player.addCardToHand(drawnCard);
+        System.out.println("[Game] " + player.getName() + " draws a card: " + drawnCard.getName());
+    }
+
     public void participantDrawsCard(Player player){
         if (participants.contains(player)) {
-            Card drawnCard = adventureDeck.drawCard();
-            player.addCardToHand(drawnCard);
-            System.out.println("[Game] " + player.getName() + " draws a card: " + drawnCard.getName());
+            playerDrawsCard(player);
         }
     }
 

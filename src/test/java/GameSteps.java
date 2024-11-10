@@ -1,16 +1,10 @@
-import cards.Card;
-import cards.FoeCard;
-import cards.QuestCard;
-import cards.WeaponCard;
+import cards.*;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 import org.junit.Assert;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,6 +51,7 @@ public class GameSteps {
     public void player_declines_to_sponsor_the_quest(int playerNumber) {
         Player player = game.getPlayers().get(playerNumber - 1);
         game.askPlayerToSponsor(player, scannerResponse("n"));
+        assertEquals( -1, game.getSponsorIndex(),"There should be no sponsor yet");
     }
 
     @Then("P{int} accepts to sponsor the quest")
@@ -64,6 +59,7 @@ public class GameSteps {
         Player player = game.getPlayers().get(playerNumber - 1);
         game.askPlayerToSponsor(player, scannerResponse("y"));
         game.setSponsorIndex(playerNumber - 1);
+        assertEquals( playerNumber-1, game.getSponsorIndex(),player.getName()+" should be a sponsor");
     }
 
     public String returnCardPositions(Player player, List<String> cardNames) {
@@ -228,6 +224,76 @@ public class GameSteps {
         List<String> actualWinners = game.checkForWinners();
 
         assertEquals(expectedWinners, actualWinners, "Winners don't match");
+    }
+
+    @And("P{int} draws ‘Plague’ and loses 2 shields")
+    public void player_draws_plague(int playerNumber) {
+        game.changeCurrentPlayer();
+        game.greetCurrentPlayer();
+        game.drawCard();
+        Player player = game.getPlayers().get(game.getCurrentPlayerIndex());
+
+        int initialShields = player.getShields();
+        game.handleEventCard((EventCard) game.getCurrentDrawnCard(), scannerResponse(""));
+        int shieldsLost = initialShields - player.getShields();
+        assertEquals(2, shieldsLost, "Player should lose 2 shields");
+        game.discardDrawnCard();
+    }
+
+    public StringBuilder totalAmountOfCardsToTrim() {
+        StringBuilder trimmerPositions = new StringBuilder();
+
+        for (int i = 0; i < 4; i++) {
+            Player player = game.getPlayers().get(i);
+            int handSizeAfterDraw = player.getHand().size() + 2;
+
+            int amountToTrim = Math.max(0, handSizeAfterDraw - 12);
+            trimmerPositions.append("0\n".repeat(amountToTrim));
+        }
+
+        return trimmerPositions;
+    }
+
+
+    @And("P{int} draws ‘Prosperity’ and all players receive 2 adventure cards")
+    public void player_draws_prosperity(int playerNumber) {
+        Map<Player, Integer> initialHandSizes = new HashMap<>();
+        for (Player player : game.getPlayers()) {
+            initialHandSizes.put(player, player.getHand().size());
+        }
+
+        game.changeCurrentPlayer();
+        game.greetCurrentPlayer();
+        game.drawCard();
+
+        game.handleEventCard((EventCard) game.getCurrentDrawnCard(), scannerResponse(totalAmountOfCardsToTrim().toString()));
+
+        for (Player player : game.getPlayers()) {
+            int initialHandSize = initialHandSizes.get(player);
+            int expectedHandSize = Math.min(12, initialHandSize + 2);
+
+            assertEquals(expectedHandSize, player.getHand().size(), player.getName() + "'s hand size should be as expected.");
+        }
+
+        game.discardDrawnCard();
+    }
+
+    @And("P{int} draws ‘Queen’s favor’ and receives 2 adventure cards")
+    public void player_draws_queen(int playerNumber) {
+        Player player = game.getPlayers().get(game.getCurrentPlayerIndex());
+        int initialHandSize = player.getHand().size();
+
+        game.changeCurrentPlayer();
+        game.greetCurrentPlayer();
+        game.drawCard();
+
+        game.handleEventCard((EventCard) game.getCurrentDrawnCard(), scannerResponse(totalAmountOfCardsToTrim().toString()));
+
+        int expectedHandSize = Math.min(12, initialHandSize + 2);
+
+        assertEquals(expectedHandSize, player.getHand().size(), player.getName() + "'s hand size should be as expected.");
+
+        game.discardDrawnCard();
     }
 
 
@@ -434,18 +500,10 @@ public class GameSteps {
 
 
         // P1 draws 12 cards
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F20", 20));
-        game.getAdventureDeck().addCard(new FoeCard("F20", 20));
-        game.getAdventureDeck().addCard(new FoeCard("F25", 25));
-        game.getAdventureDeck().addCard(new FoeCard("F25", 25));
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F10", 10),3);
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F15", 15),5);
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F20", 20),2);
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F25", 25),2);
 
         // P2 draws F25
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
@@ -465,38 +523,14 @@ public class GameSteps {
         // P4 draws F35
         game.getAdventureDeck().addCard(new FoeCard("F35", 35));
 
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-
-        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
-        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
-
-        game.getAdventureDeck().addCard(new FoeCard("F50", 50));
-        game.getAdventureDeck().addCard(new FoeCard("F50", 50));
-
-        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
-        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
-
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-
-        game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
-        game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
-
-        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
+        // Remaining cards
+        game.getAdventureDeck().addMultipleCards((new FoeCard("F35", 35)),3);
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F40", 40), 2);
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F50", 50),2);
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("D5", 5),2);
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("S10", 10),9);
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("H10", 10),4);
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("B15", 15),2);
     }
     private void oneWinnersScenario() {
         // Rig event deck
@@ -509,20 +543,19 @@ public class GameSteps {
         // Rig adventure deck
         game.getAdventureDeck().getCards().clear();
 
-        // P1's Hand: F5, F5, F5, F15, F25, S10, S10, H10, H10, H10, B15, L20
+        // P1's Hand: F5, F5, F10, F10, F15, F20, F25, S10, S10, S10, B15, B15
         game.getAdventureDeck().addCard(new FoeCard("F5", 5));
         game.getAdventureDeck().addCard(new FoeCard("F5", 5));
-        game.getAdventureDeck().addCard(new FoeCard("F5", 5));
+        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
+        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
         game.getAdventureDeck().addCard(new FoeCard("F15", 15));
+        game.getAdventureDeck().addCard(new FoeCard("F20", 20));
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
         game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
         game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
         game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
-        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
-
+        game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
 
         // P2's Hand: F5, F15, F20, F20, D5, S10, S10, H10, H10, B15, B15, E30
         game.getAdventureDeck().addCard(new FoeCard("F5", 5));
@@ -552,92 +585,129 @@ public class GameSteps {
         game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
         game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
 
-        // P4's Hand:  F5, F5, F10, F10, F20, F25, F70, S10, S10, S10, B15, B15
+        // P4's Hand:  F5, F5, F5, F15, F25, S10, S10, H10, H10, H10, B15, L20
         game.getAdventureDeck().addCard(new FoeCard("F5", 5));
         game.getAdventureDeck().addCard(new FoeCard("F5", 5));
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F20", 20));
+        game.getAdventureDeck().addCard(new FoeCard("F5", 5));
+        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
-        game.getAdventureDeck().addCard(new FoeCard("F70", 70));
         game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
         game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
         game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
-        game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
+        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
 
-        // P2 draws L20
+        // Stage 1 - Q4
+        // P2 draws F50
+        game.getAdventureDeck().addCard(new FoeCard("F50", 50));
 
-        // P3 draws F5
-        game.getAdventureDeck().addCard(new FoeCard("F5", 5));
+        // P3 draws D5
+        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
 
         // P4 draws D5
         game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
+
+        // Stage 2 - Q4
+        // P2 draws L20
         game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
 
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
-        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
+        // P3 draws S10
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
 
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
-        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
+        // P4 draws S10
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
 
+        // Stage 3 - Q4
+        // P2, P3 draws D5
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("D5", 5),2);
+        // P4 draws F30
+        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
+
+        // Stage 4 - Q4
+        // P2, P3 draws L20
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("L20", 20),2);
+        // P4 draws F30
+        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
+
+        // P1 draws 8 cards
+        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
+        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
+        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
+        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
+        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
+        game.getAdventureDeck().addCard(new FoeCard("F15", 15));
         game.getAdventureDeck().addCard(new FoeCard("F20", 20));
         game.getAdventureDeck().addCard(new FoeCard("F20", 20));
 
+
+        // P3 draws 2 cards
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+
+        // P4 draws 2 cards
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
+
+
+        // P1 draws 2 cards
+        game.getAdventureDeck().addCard(new FoeCard("F5", 5));
+        game.getAdventureDeck().addCard(new FoeCard("F10", 10));
+
+        // P2 draws 2 cards
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+
+        // P4 draws 2 cards
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
         game.getAdventureDeck().addCard(new FoeCard("F25", 25));
 
-        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
-        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
-        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
-        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
-
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-
-        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
-        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
-
-        game.getAdventureDeck().addCard(new FoeCard("F50", 50));
-        game.getAdventureDeck().addCard(new FoeCard("F50", 50));
-
-        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
-        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
-        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
-        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
-
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-
-        game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
+        // Stage 1 - Q3
+        // P2 draws
         game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
 
+        // P3 draws
+        game.getAdventureDeck().addCard(new WeaponCard("B15", 15));
 
-        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
-        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
-        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
+        // P4 draws F30
+        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
 
+        // Stage 2 - Q3
+        // P2 draws D5
+        game.getAdventureDeck().addCard(new WeaponCard("D5", 5));
+        // P3 draws E30
         game.getAdventureDeck().addCard(new WeaponCard("E30", 30));
+
+        game.getAdventureDeck().addCard(new FoeCard("F30", 30));
+
+        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
+        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
+        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
+        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
+
+        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
+        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
+
+        game.getAdventureDeck().addCard(new FoeCard("F50", 50));
+
+        game.getAdventureDeck().addCard(new FoeCard("F70", 70));
+
+
+
+
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
+
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
+
+
+        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
+
 
     }
 
@@ -741,4 +811,6 @@ public class GameSteps {
     private Scanner scannerResponse(String response) {
         return new Scanner(new ByteArrayInputStream(response.getBytes()));
     }
+
+
 }
