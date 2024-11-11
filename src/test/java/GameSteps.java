@@ -218,6 +218,12 @@ public class GameSteps {
         assertEquals(shields, player.getShields(), "Number of shields don't match");
     }
 
+    @And("P{int} should have {int} cards on their hand")
+    public void pShouldHaveCardsOnTheirHand(int playerNumber, int cards) {
+        Player player = game.getPlayers().get(playerNumber-1);
+        assertEquals(cards, player.getHand().size(), "Number of cards on hand don't match");
+    }
+
     @And("{string} wins the game")
     public void player_wins_the_game(String playersList) {
         List<String> expectedWinners = Arrays.asList(playersList.split(", "));
@@ -531,6 +537,7 @@ public class GameSteps {
         game.getAdventureDeck().addMultipleCards(new WeaponCard("S10", 10),9);
         game.getAdventureDeck().addMultipleCards(new WeaponCard("H10", 10),4);
         game.getAdventureDeck().addMultipleCards(new WeaponCard("B15", 15),2);
+        game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
     }
     private void oneWinnersScenario() {
         // Rig event deck
@@ -679,36 +686,21 @@ public class GameSteps {
         // P3 draws E30
         game.getAdventureDeck().addCard(new WeaponCard("E30", 30));
 
+        // Stage 3 - Q3
+        // P2 draws F30
         game.getAdventureDeck().addCard(new FoeCard("F30", 30));
-
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
-        game.getAdventureDeck().addCard(new FoeCard("F35", 35));
+        // P3 draws F35
         game.getAdventureDeck().addCard(new FoeCard("F35", 35));
 
-        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
-        game.getAdventureDeck().addCard(new FoeCard("F40", 40));
-
+        // Sponsor draws 6 cards
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F35", 35),3);
+        game.getAdventureDeck().addMultipleCards(new FoeCard("F40", 40),2);
         game.getAdventureDeck().addCard(new FoeCard("F50", 50));
-
+        // Remaining Cards
         game.getAdventureDeck().addCard(new FoeCard("F70", 70));
-
-
-
-
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("S10", 10));
-
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-        game.getAdventureDeck().addCard(new WeaponCard("H10", 10));
-
-
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("S10", 10),3);
+        game.getAdventureDeck().addMultipleCards(new WeaponCard("H10", 10),4);
         game.getAdventureDeck().addCard(new WeaponCard("L20", 20));
-
-
     }
 
     private void noWinnersScenario() {
@@ -811,6 +803,4 @@ public class GameSteps {
     private Scanner scannerResponse(String response) {
         return new Scanner(new ByteArrayInputStream(response.getBytes()));
     }
-
-
 }

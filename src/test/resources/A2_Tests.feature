@@ -63,6 +63,12 @@ Feature: Assignment Scenarios
     And the game resolves all attacks for stage 4
     And P3 loses the stage and has 0 shields and has the remaining cards "F5, F5, F15, F30, S10"
     And P4 wins the quest and gains 4 shields and has the remaining cards "F15, F15, F40, L20"
+    And P1 should have 0 shields in total
+    And P1 should have 9 cards on their hand
+    And P3 should have 0 shields in total
+    And P3 should have 5 cards on their hand
+    And P4 should have 4 shields in total
+    And P4 should have 4 cards on their hand
     And All participants discard the cards used for their attacks
     # Post-Quest Sponsorship
     And Sponsor discards all cards used in quest and draws 13 random cards and then trims down to 12 cards
@@ -311,6 +317,7 @@ Feature: Assignment Scenarios
     And P2 should have 5 shields in total
     And P3 wins the quest and gains 3 shields and has the remaining cards "F10, F15, F20, F20, F35, H10, H10"
     And P3 should have 7 shields in total
+    And P4 should have 4 shields in total
     And All participants discard the cards used for their attacks
      # Post-Quest Sponsorship
     And Sponsor discards all cards used in quest and draws 6 random cards and then trims down to 12 cards
@@ -338,8 +345,14 @@ Feature: Assignment Scenarios
     And P4 sees their hand and builds an attack with "D5, H10"
     And the game resolves all attacks for stage 1
     And P2 loses the stage and has 0 shields and has the remaining cards "F5, F5, F15, F15, F30, F40, S10, H10, H10, B15, B15"
+    And P2 should have 0 shields in total
+    And P2 should have 11 cards on their hand
     And P3 loses the stage and has 0 shields and has the remaining cards "F5, F5, F5, F15, S10, S10, S10, H10, H10, B15"
+    And P3 should have 0 shields in total
+    And P3 should have 10 cards on their hand
     And P4 loses the stage and has 0 shields and has the remaining cards "F5, F15, F15, F40, D5, S10, H10, B15, B15, L20"
+    And P4 should have 0 shields in total
+    And P4 should have 10 cards on their hand
     And All participants discard the cards used for their attacks
     # The quest ends with no winner but P1 does discards and draws.
     And Sponsor discards all cards used in quest and draws 6 random cards and then trims down to 12 cards
