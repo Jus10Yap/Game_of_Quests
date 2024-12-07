@@ -187,6 +187,7 @@ public class SeleniumTest {
         confirmAttackButton.click();
         Thread.sleep(2000);
 
+        Thread.sleep(4000);
         // P4 Assertions
         // Assert P4 has 10 cards
         assertCardCount(4,10);
@@ -260,7 +261,7 @@ public class SeleniumTest {
         System.out.println("P1 Hand: " + p1Hand);
         Assertions.assertEquals(expectedHand, p1Hand, "Player 1's hand should match the expected cards.");
         Thread.sleep(2000);
-
+        Thread.sleep(4000);
         // Stage 3
         // P3 is asked and decides to participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -298,7 +299,7 @@ public class SeleniumTest {
         // P4 Assertions
         // Assert P4 has 7 cards
         assertCardCount(4,7);
-
+        Thread.sleep(4000);
         // Stage 4
         // P3 is asked and decides to participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -331,7 +332,7 @@ public class SeleniumTest {
         buildAttackInput.sendKeys("D5, S10, L20, E30");
         confirmAttackButton.click();
         Thread.sleep(2000);
-
+        Thread.sleep(4000);
         // P4 Assertions
         // Assert P4 has 4 cards
         assertCardCount(4,4);
@@ -534,7 +535,7 @@ public class SeleniumTest {
 
         // Assert P3 has 0 shields
         assertShieldCount(3,0);
-
+        Thread.sleep(4000);
         // Stage 2
         // P2 and P4 participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -566,7 +567,7 @@ public class SeleniumTest {
         // Assert P4 has 11 cards
         assertCardCount(4,11);
 
-
+        Thread.sleep(4000);
         // Stage 3
         // P2 and P4 participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -598,7 +599,7 @@ public class SeleniumTest {
         assertCardCount(2,10);
         // Assert P4 has 10 cards
         assertCardCount(4,10);
-
+        Thread.sleep(4000);
         // Stage 4
         // P2 and P4 participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -625,7 +626,7 @@ public class SeleniumTest {
         buildAttackInput.sendKeys("S10,B15");
         confirmAttackButton.click();
         Thread.sleep(2000);
-
+        Thread.sleep(4000);
         // Assert P2 has 9 cards
         assertCardCount(2,9);
         // Assert P4 has 9 cards
@@ -682,7 +683,7 @@ public class SeleniumTest {
 
         // Assert P3 has 7 cards
         assertCardCount(3,7);
-
+        Thread.sleep(4000);
         // Stage 1
         // P1 declines to participate
         driver.findElement(By.xpath("//button[contains(text(), 'No')]")).click();
@@ -717,7 +718,7 @@ public class SeleniumTest {
         assertCardCount(2,9);
         // Assert P4 has 9 cards
         assertCardCount(4,9);
-
+        Thread.sleep(4000);
         // Stage 2
         // P2 and P4 participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -747,7 +748,7 @@ public class SeleniumTest {
         assertCardCount(2,9);
         // Assert P4 has 9 cards
         assertCardCount(4,9);
-
+        Thread.sleep(4000);
         // Stage 3
         // P2 and P4 participate
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -777,8 +778,8 @@ public class SeleniumTest {
         discardCardsInput.clear();
         discardCardsInput.sendKeys("F20,F25,F30");
         confirmSelectionButton.click();
+        Thread.sleep(2000);
         Thread.sleep(4000);
-
         // P1 Assertions
         // Assert P1 has 12 cards
         assertCardCount(1,12);
@@ -961,7 +962,7 @@ public class SeleniumTest {
         assertCardCount(3,11);
         // Assert P4 has 11 cards
         assertCardCount(4,11);
-
+        Thread.sleep(4000);
         // P2, P3 and P4 participate in stage 2
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
         Thread.sleep(2000);
@@ -995,7 +996,7 @@ public class SeleniumTest {
         assertCardCount(3,11);
         // Assert P4 has 11 cards
         assertCardCount(4,11);
-
+        Thread.sleep(4000);
         // P2, P3 and P4 participate in stage 3
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
         Thread.sleep(2000);
@@ -1021,7 +1022,7 @@ public class SeleniumTest {
         buildAttackInput.sendKeys("B15");
         confirmAttackButton.click();
         Thread.sleep(2000);
-
+        Thread.sleep(4000);
         // P2, P3 and P4 participate in stage 4
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
         Thread.sleep(2000);
@@ -1054,7 +1055,7 @@ public class SeleniumTest {
         assertCardCount(3,11);
         // Assert P4 has 11 cards
         assertCardCount(4,11);
-
+        Thread.sleep(4000);
         // P1 discards 2xF5, 2xF10
         discardCardsInput.clear();
         discardCardsInput.sendKeys("F5,F5,F10,F10");
@@ -1079,7 +1080,7 @@ public class SeleniumTest {
 
         // P2 draws Plague
         driver.findElement(By.xpath("//button[contains(text(), 'Draw Event Card')]")).click();
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         // Assert P1 has 0 shields
         assertShieldCount(1,0);
@@ -1096,7 +1097,7 @@ public class SeleniumTest {
 
         // P3 draws ‘Prosperity’: All 4 players receive 2 adventure cards
         driver.findElement(By.xpath("//button[contains(text(), 'Draw Event Card')]")).click();
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         // P1 discards 1xF5, 1xF10 (has 12 cards)
         discardCardsInput.clear();
@@ -1134,7 +1135,7 @@ public class SeleniumTest {
 
         // P4 draws ‘Queen’s favor’ : discards F25 and F30
         driver.findElement(By.xpath("//button[contains(text(), 'Draw Event Card')]")).click();
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         discardCardsInput.clear();
         discardCardsInput.sendKeys("F25,F30");
@@ -1209,7 +1210,7 @@ public class SeleniumTest {
         buildAttackInput.clear();
         buildAttackInput.sendKeys("H10");
         confirmAttackButton.click();
-        Thread.sleep(2000);
+        Thread.sleep(6000);
 
         // P2 and P3 participate in stage 2
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -1226,7 +1227,7 @@ public class SeleniumTest {
         buildAttackInput.clear();
         buildAttackInput.sendKeys("B15, S10");
         confirmAttackButton.click();
-        Thread.sleep(2000);
+        Thread.sleep(6000);
 
         // P2 and P3 participate in stage 3
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
@@ -1243,7 +1244,7 @@ public class SeleniumTest {
         buildAttackInput.clear();
         buildAttackInput.sendKeys("E30");
         confirmAttackButton.click();
-        Thread.sleep(2000);
+        Thread.sleep(6000);
         // P1 discards 3xF15
         discardCardsInput.clear();
         discardCardsInput.sendKeys("F15,F15,F15");
