@@ -1,0 +1,131 @@
+.current-player-hand,
+#turn-indicator {
+    display: none;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.deck {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    width: 30%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.deck h3 {
+    margin-top: 0;
+}
+
+.player {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    width: 20%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.turn-indicator {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+#trim-box {
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    background-color: #f9f9f9;
+}
+.card-list {
+    list-style: none;
+    padding: 0;
+}
+.card-list li {
+    margin: 8px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.card-list li:hover {
+    background-color: #f0f0f0;
+}
+.card-list li.selected {
+    background-color: #ffdddd;
+    border-color: #ff6666;
+}
+.btn {
+    margin: 8px 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: #565e64;
+}
+
+#game-log {
+    width: 100%;
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+}
+#game-log p {
+    margin: 5px 0;
+}
+#yes-button {
+    background-color: #28a745;
+    color: white;
+}
+
+#no-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+#button-container {
+            display: flex;
+            justify-content: left;
+            gap: 10px;
+            margin-top: 20px;
+        }
+

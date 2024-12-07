@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Game of Quests</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+
+        <h1>Game of Quests</h1>
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="a1Scenario()">A1_scenario</button>
+        <button
+            onclick="twoWinnersScenario()">2winner_game_2winner_quest</button>
+        <button onclick="oneWinnerScenario()">1winner_game_with_events</button>
+        <button onclick="noWinnerScenario()">0_winner_quest</button>
+        <h2>Game Status</h2>
+        <!-- Turn Indicator -->
+        <div class="turn-indicator" id="turn-indicator">
+            <!-- Display current player -->
+        </div>
+        <!-- Display current player hand -->
+        <h4 class="current-player-hand" style="display: none;">Hand:</h4>
+        <ul class="current-player-hand" id="current-player-hand"
+            style="display: none;"></ul>
+        <div id="game-log"
+            style="width: 100%; height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+            <!-- Messages will appear here -->
+        </div>
+        <button id="end-round-button" style="display: none;">End Round</button>
+        <div id="button-container" style="display: none;">
+            <button id="yes-button">Yes</button>
+            <button id="no-button">No</button>
+        </div>
+        <div class="container" id="build-attack" style="display: none;">
+            <h2>Setup Attack</h2>
+            <p>Select Weapon cards to build attack (e.g., "D5,H10").</p>
+            <input id="build-attack-input"
+                placeholder="Enter card names to build attack (e.g., D5,H10)"
+                type="text">
+
+            <!-- Button to confirm the selected cards for removal -->
+            <button id="confirm-attack-stage" class="btn btn-primary">Confirm
+                Attack</button>
+        </div>
+        <div class="container" id="build-stage" style="display: none;">
+            <h2>Build Stage</h2>
+            <p>Select cards to build stage (e.g., "F5,H10").</p>
+            <input id="build-stage-input"
+                placeholder="Enter card names to build stage (e.g., F5,H10)"
+                type="text">
+
+            <!-- Button to confirm the selected cards for removal -->
+            <button id="confirm-build-stage" class="btn btn-primary">Confirm
+                Stage</button>
+        </div>
+        <div class="container" id="trim-box" style="display: none;">
+            <h2>Trim Hand</h2>
+            <p>To continue, you must trim your hand to 12 cards.</p>
+            <p id="selection-info">Select cards to discard (e.g., "F5,H10").</p>
+            <input id="discard-cards-input"
+                placeholder="Enter card names to discard (e.g., F5,H10)"
+                type="text">
+
+            <!-- Button to confirm the selected cards for removal -->
+            <button id="confirm-trim" class="btn btn-primary"
+                onclick="confirmTrim()">Confirm Selection</button>
+
+        </div>
+        <h2>Decks</h2>
+        <div class="container">
+            <!-- Adventure Deck -->
+            <div class="deck">
+                <h3>Adventure Deck</h3>
+                <p>Cards Left: <span id="adventure-deck-count">100</span></p>
+                <p>Cards in discard pile: <span
+                        id="adventure-discard-deck-count">0</span></p>
+            </div>
+
+            <!-- Event Deck -->
+            <div class="deck">
+                <h3>Event Deck</h3>
+                <p>Cards Left: <span id="event-deck-count">17</span></p>
+                <button id="draw-event-button">Draw Event Card</button>
+                <h3>Event Discard Pile</h3>
+                <ul id="event-discard-pile">
+                    <!-- Discarded event cards will appear here -->
+                </ul>
+            </div>
+        </div>
+
+        <h2>Players</h2>
+        <div class="container">
+            <!-- Player Information -->
+            <div class="player">
+                <h3>P1</h3>
+                <p><strong>Shields: </strong><span id="p1-shields">0</span></p>
+                <p><strong>Cards: </strong><span id="p1-cards">0</span></p>
+                <p><strong>Hand: </strong><span id="p1-hand"></span></p>
+
+            </div>
+
+            <div class="player">
+                <h3>P2</h3>
+                <p><strong>Shields: </strong><span id="p2-shields">0</span></p>
+                <p><strong>Cards: </strong><span id="p2-cards">0</span></p>
+                <p><strong>Hand: </strong><span id="p2-hand"></span></p>
+            </div>
+
+            <div class="player">
+                <h3>P3</h3>
+                <p><strong>Shields: </strong><span id="p3-shields">0</span></p>
+                <p><strong>Cards: </strong><span id="p3-cards">0</span></p>
+                <p><strong>Hand: </strong><span id="p3-hand"></span></p>
+            </div>
+
+            <div class="player">
+                <h3>P4</h3>
+                <p><strong>Shields: </strong> <span id="p4-shields">0</span></p>
+                <p><strong>Cards: </strong><span id="p4-cards">0</span></p>
+                <p><strong>Hand: </strong><span id="p4-hand"></span></p>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
