@@ -23,7 +23,7 @@ public class SeleniumTest {
 
     @AfterEach
     void teardown() {
-        // driver.quit();
+        driver.quit();
     }
 
     public void assertShieldCount(int playerNumber, int expectedShieldCount) throws InterruptedException {
