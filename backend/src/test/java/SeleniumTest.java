@@ -71,11 +71,11 @@ public class SeleniumTest {
 
         // P2 is asked and sponsors
         driver.findElement(By.xpath("//button[contains(text(), 'Yes')]")).click();
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         WebElement buildStageInput = driver.findElement(By.id("build-stage-input"));
         buildStageInput.clear();
-        WebElement confirmButton = driver.findElement(By.xpath("//button[contains(text(), 'Confirm Stage')]"));
+        WebElement confirmButton = driver.findElement(By.id("confirm-build-stage"));
 
         // P2 builds stage 1 with "F5, H10"
         buildStageInput.clear();
@@ -430,7 +430,7 @@ public class SeleniumTest {
 
         WebElement buildStageInput = driver.findElement(By.id("build-stage-input"));
         buildStageInput.clear();
-        WebElement confirmButton = driver.findElement(By.xpath("//button[contains(text(), 'Confirm Stage')]"));
+        WebElement confirmButton = driver.findElement(By.id("confirm-build-stage"));
 
         // P1 builds stage 1 with "F5"
         buildStageInput.clear();
@@ -868,7 +868,7 @@ public class SeleniumTest {
 
         WebElement buildStageInput = driver.findElement(By.id("build-stage-input"));
         buildStageInput.clear();
-        WebElement confirmButton = driver.findElement(By.xpath("//button[contains(text(), 'Confirm Stage')]"));
+        WebElement confirmButton = driver.findElement(By.id("confirm-build-stage"));
         // Stage 1: F5
         buildStageInput.clear();
         buildStageInput.sendKeys("F5");
@@ -1345,7 +1345,7 @@ public class SeleniumTest {
         // P1 builds 2 stages:
         WebElement buildStageInput = driver.findElement(By.id("build-stage-input"));
         buildStageInput.clear();
-        WebElement confirmButton = driver.findElement(By.xpath("//button[contains(text(), 'Confirm Stage')]"));
+        WebElement confirmButton = driver.findElement(By.id("confirm-build-stage"));
 
         // Stage 1: F50 + dagger, sword, horse, axe, lance
         buildStageInput.clear();
